@@ -13,6 +13,7 @@ import type { Log } from '../services/db';
 
 interface LayoutProps {
   children: React.ReactNode;
+  sidebar: React.ReactNode;
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
   currentTabName: string;
@@ -20,6 +21,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ 
   children, 
+  sidebar,
   collapsed, 
   setCollapsed,
   currentTabName
@@ -45,7 +47,9 @@ export const Layout: React.FC<LayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
+      {sidebar}
       {/* Top Navbar & Contents Container */}
+
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
         collapsed ? 'md:pl-20' : 'md:pl-64'
       }`}>

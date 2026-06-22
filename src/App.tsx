@@ -78,16 +78,17 @@ function App() {
       collapsed={sidebarCollapsed} 
       setCollapsed={setSidebarCollapsed}
       currentTabName={getTabName()}
+      sidebar={
+        <Sidebar 
+          currentTab={currentTab} 
+          setCurrentTab={setCurrentTab} 
+          collapsed={sidebarCollapsed} 
+          setCollapsed={setSidebarCollapsed}
+          onLogout={handleLogout}
+          userName={user.nome}
+        />
+      }
     >
-      <Sidebar 
-        currentTab={currentTab} 
-        setCurrentTab={setCurrentTab} 
-        collapsed={sidebarCollapsed} 
-        setCollapsed={setSidebarCollapsed}
-        onLogout={handleLogout}
-        userName={user.nome}
-      />
-      
       {/* Sub-views routing logic */}
       <div className="w-full">
         {currentTab === 'dashboard' && <Dashboard />}
@@ -115,6 +116,7 @@ function App() {
       </div>
     </Layout>
   );
+
 }
 
 export default App;
