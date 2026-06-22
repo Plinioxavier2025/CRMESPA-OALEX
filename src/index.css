@@ -81,3 +81,187 @@
   box-shadow: var(--shadow-premium-hover);
   transform: translateY(-2px);
 }
+
+/* Scoped Premium Dark Glassmorphic Theme Overrides */
+.dark-theme-main {
+  color: #f8fafc !important;
+}
+
+/* Cards & Panel Backgrounds */
+.dark-theme-main .bg-white {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-theme-main .border-slate-100,
+.dark-theme-main .border-slate-200 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Card divider lines */
+.dark-theme-main .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Text color adaptations */
+.dark-theme-main .text-brand-blue-dark {
+  color: #ffffff !important;
+}
+
+.dark-theme-main .text-slate-800 {
+  color: #f1f5f9 !important;
+}
+
+.dark-theme-main .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+.dark-theme-main .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+.dark-theme-main .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.dark-theme-main .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Inner block backgrounds */
+.dark-theme-main .bg-slate-50,
+.dark-theme-main .bg-slate-50\/50 {
+  background-color: rgba(15, 23, 42, 0.4) !important;
+}
+
+.dark-theme-main .bg-slate-100 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Inputs, Textareas and Dropdown Selects */
+.dark-theme-main input,
+.dark-theme-main select,
+.dark-theme-main textarea {
+  background-color: rgba(15, 23, 42, 0.7) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark-theme-main input:focus,
+.dark-theme-main select:focus,
+.dark-theme-main textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+.dark-theme-main input::placeholder {
+  color: #64748b !important;
+}
+
+/* Status badging and icon boxes */
+.dark-theme-main .bg-brand-blue-light {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+.dark-theme-main .text-brand-blue-primary {
+  color: #60a5fa !important;
+}
+
+.dark-theme-main .bg-emerald-50,
+.dark-theme-main .bg-brand-green-light {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+.dark-theme-main .text-brand-green-primary {
+  color: #34d399 !important;
+}
+
+.dark-theme-main .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+.dark-theme-main .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+.dark-theme-main .bg-red-50 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+.dark-theme-main .text-red-600 {
+  color: #f87171 !important;
+}
+
+.dark-theme-main .bg-purple-50 {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+}
+.dark-theme-main .text-purple-600 {
+  color: #c084fc !important;
+}
+
+.dark-theme-main .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+}
+.dark-theme-main .text-orange-600 {
+  color: #fb923c !important;
+}
+
+.dark-theme-main .bg-sky-50 {
+  background-color: rgba(14, 165, 233, 0.15) !important;
+}
+.dark-theme-main .text-sky-600 {
+  color: #38bdf8 !important;
+}
+
+/* Primary Action Buttons (Tactile Green) */
+.dark-theme-main button.bg-brand-blue-dark,
+.dark-theme-main .bg-brand-blue-dark {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+  transition: all 0.2s ease-in-out !important;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2) !important;
+}
+
+.dark-theme-main button.bg-brand-blue-dark:hover,
+.dark-theme-main .bg-brand-blue-dark:hover {
+  background-color: #10b981 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.35) !important;
+}
+
+/* Secondary Action Buttons (Tactile Gray) */
+.dark-theme-main button.bg-white,
+.dark-theme-main button:not(.bg-brand-blue-dark):not(.bg-brand-green-primary):not(.bg-red-600):not(.bg-red-50) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s ease-in-out !important;
+  box-shadow: none !important;
+}
+
+.dark-theme-main button.bg-white:hover,
+.dark-theme-main button:not(.bg-brand-blue-dark):not(.bg-brand-green-primary):not(.bg-red-600):not(.bg-red-50):hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Chart Tooltip Custom Stylings */
+.recharts-tooltip-wrapper {
+  z-index: 100 !important;
+}
+
+.recharts-default-tooltip {
+  background-color: #0f172a !important;
+  border: 1px solid #334155 !important;
+  border-radius: 12px !important;
+  color: #f8fafc !important;
+}
+
+.recharts-tooltip-item {
+  color: #f1f5f9 !important;
+}
+
+.recharts-cartesian-grid-horizontal line {
+  stroke: rgba(255, 255, 255, 0.05) !important;
+}
+

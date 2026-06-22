@@ -46,24 +46,29 @@ export const Layout: React.FC<LayoutProps> = ({
   }, [logsOpen]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex relative overflow-hidden">
+      {/* Decorative calm background glows */}
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-brand-blue-primary/10 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-green-primary/5 rounded-full blur-[130px] pointer-events-none" />
+
       {sidebar}
       {/* Top Navbar & Contents Container */}
 
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative z-10 ${
         collapsed ? 'md:pl-20' : 'md:pl-64'
       }`}>
         {/* Top Header */}
-        <header className="sticky top-0 z-20 h-16 bg-white border-b border-slate-100 px-4 md:px-6 flex items-center justify-between">
+        <header className="sticky top-0 z-20 h-16 bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-4 md:px-6 flex items-center justify-between text-white">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-2 rounded-lg hover:bg-slate-55 hover:text-brand-blue-dark transition-colors md:hidden text-slate-500 cursor-pointer"
+              className="p-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors md:hidden text-slate-400 cursor-pointer"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-semibold text-brand-blue-dark font-outfit truncate">{currentTabName}</h1>
+            <h1 className="text-xl font-bold text-white font-outfit truncate">{currentTabName}</h1>
           </div>
+
 
           <div className="flex items-center gap-3">
             {/* Supabase Status Indicator Badge */}
@@ -119,7 +124,7 @@ export const Layout: React.FC<LayoutProps> = ({
         </header>
 
         {/* Main Content Pane */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl w-full mx-auto animate-slide-up relative">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl w-full mx-auto animate-slide-up relative dark-theme-main">
           {/* Subtle background brand watermark */}
           <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.025] select-none">
             <img 
