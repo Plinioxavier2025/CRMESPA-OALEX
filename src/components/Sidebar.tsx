@@ -53,15 +53,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="h-16 flex items-center justify-between px-4 border-b border-slate-850">
           {!collapsed ? (
             <div className="flex items-center gap-2 select-none animate-fade-in">
-              <HeartPulse className="w-6 h-6 text-brand-green-primary" />
-              <div className="flex flex-col">
-                <span className="font-outfit font-extrabold text-sm tracking-wider uppercase">CRM ESPAÇO ALEX</span>
-                <span className="text-[10px] text-slate-400">Espaço Alex Silveira</span>
-              </div>
+              <img 
+                src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
+                alt="Logo Espaço Alex" 
+                className="h-8 w-auto object-contain max-w-[150px]"
+                onError={(e) => {
+                  // Fallback to text if remote image fails
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
             </div>
           ) : (
             <div className="w-full flex justify-center">
-              <HeartPulse className="w-8 h-8 text-brand-green-primary" />
+              <img 
+                src="https://www.psicologoalexsilveira.com.br/assets/imgs/favicon/favicon-96x96.png" 
+                alt="Icon Espaço Alex" 
+                className="h-7 w-7 object-contain"
+                onError={(e) => {
+                  // Fallback to generic dot if remote image fails
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
             </div>
           )}
           
@@ -73,6 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
+
 
         {/* Navigation Items */}
         <nav className="p-3 space-y-1">

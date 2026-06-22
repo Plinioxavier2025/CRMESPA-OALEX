@@ -119,10 +119,25 @@ export const Layout: React.FC<LayoutProps> = ({
         </header>
 
         {/* Main Content Pane */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl w-full mx-auto animate-slide-up">
-          {children}
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl w-full mx-auto animate-slide-up relative">
+          {/* Subtle background brand watermark */}
+          <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.025] select-none">
+            <img 
+              src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipo.png" 
+              alt="Watermark Logo" 
+              className="w-1/2 max-w-md h-auto object-contain"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+          </div>
+
+          <div className="relative z-10">
+            {children}
+          </div>
         </main>
       </div>
+
 
       {/* Audit Logs Right Drawer */}
       {logsOpen && (

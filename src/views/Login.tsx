@@ -87,17 +87,30 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#0284C7]/15 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-green-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
+      {/* Subtle brand background watermark */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
+        <img 
+          src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
+          alt="Watermark Logo" 
+          className="w-2/3 max-w-2xl h-auto object-contain filter grayscale"
+        />
+      </div>
+
       {/* Main glass container */}
       <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden glass-panel border border-white/10 shadow-2xl relative z-10 animate-slide-up">
         
         {/* Left Side: Welcoming brand introduction */}
         <div className="p-8 md:p-12 bg-white/5 backdrop-blur-md flex flex-col justify-between border-r border-white/5 text-white">
           <div className="flex items-center gap-2 select-none">
-            <HeartPulse className="w-8 h-8 text-brand-green-primary" />
-            <div className="flex flex-col">
-              <span className="font-outfit font-extrabold text-lg tracking-wider">CRM ESPAÇO ALEX</span>
-              <span className="text-xs text-emerald-400">Espaço Alex Silveira</span>
-            </div>
+            <img 
+              src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
+              alt="Logo Espaço Alex" 
+              className="h-10 w-auto object-contain max-w-[180px]"
+              onError={(e) => {
+                // If remote logo fails to load, show clean fallback
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
           </div>
 
           <div className="space-y-6 my-10 md:my-0">
@@ -109,6 +122,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               Acompanhe o fluxo de pacientes, meça a taxa de retenção da clínica, faça análises mensais e emita relatórios com praticidade e segurança.
             </p>
           </div>
+
 
           <div className="text-xs text-slate-400 font-light flex items-center gap-1">
             <span>Acesse o site oficial: </span>
