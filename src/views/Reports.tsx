@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../services/db';
 import type { Paciente } from '../services/db';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { 
   FileText, 
@@ -166,84 +166,93 @@ export const Reports: React.FC = () => {
   // EXPORT PDF GENERATOR (JSPDF + JSPDF-AUTOTABLE)
   // ----------------------------------------------------
   const exportToPDF = () => {
-    const doc = new jsPDF();
-    const currentDate = new Date().toLocaleDateString('pt-BR');
-    
-    // Add header branding metadata
-    doc.setFillColor(13, 46, 94); // Navy blue primary color
-    doc.rect(0, 0, 210, 30, 'F');
+    try {
+      console.log('Iniciando exportação de PDF...');
+      const doc = new jsPDF();
+      const currentDate = new Date().toLocaleDateString('pt-BR');
+      
+      // Add header branding metadata
+      doc.setFillColor(13, 46, 94); // Navy blue primary color
+      doc.rect(0, 0, 210, 30, 'F');
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('Helvetica', 'bold');
-    doc.setFontSize(18);
-    doc.text('CRM ESPAÇO ALEX', 15, 18);
-    
-    doc.setFont('Helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(200, 220, 255);
-    doc.text('Espaço Alex Silveira Silveira - Consultório de Psicologia', 15, 24);
-    doc.text(`Gerado em: ${currentDate}`, 160, 24);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.text('CRM ESPAÇO ALEX', 15, 18);
+      
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(200, 220, 255);
+      doc.text('Espaço Alex Silveira Silveira - Consultório de Psicologia', 15, 24);
+      doc.text(`Gerado em: ${currentDate}`, 160, 24);
 
-    let titleText = '';
-    let tableHeaders: string[][] = [];
-    let tableRows: any[][] = [];
+      let titleText = '';
+      let tableHeaders: string[][] = [];
+      let tableRows: any[][] = [];
 
-    if (reportType === 'pacientes') {
-      titleText = 'Relatório Geral de Pacientes';
-      tableHeaders = [['Nome Completo', 'Telefone', 'Convênio', 'Status', 'Data Cadastro']];
-      tableRows = patientsReportData.map(p => [
-        p.nome,
-        p.telefone,
-        p.convenio,
-        p.status,
-        formatD(p.data_cadastro)
-      ]);
-    } else if (reportType === 'crescimento') {
-      titleText = 'Relatório de Crescimento Clínico (2026)';
-      tableHeaders = [['Mês / 2026', 'Entradas', 'Saídas', 'Crescimento Líquido', 'Retenção (%)']];
-      tableRows = growthReportData.map(g => [
-        g.mes,
-        g.entradas,
-        g.saidas,
-        g.crescimentoNet,
-        `${g.retencao.toFixed(1)}%`
-      ]);
-    } else if (reportType === 'desistencias') {
-      titleText = 'Relatório de Desistências de Pacientes';
-      tableHeaders = [['Nome do Paciente', 'Data Desistência', 'Motivo da Desistência']];
-      tableRows = desistenciasReportData.map(d => [
-        d.nome,
-        formatD(d.data),
-        d.motivo
-      ]);
+      if (reportType === 'pacientes') {
+        titleText = 'Relatório Geral de Pacientes';
+        tableHeaders = [['Nome Completo', 'Telefone', 'Convênio', 'Status', 'Data Cadastro']];
+        tableRows = patientsReportData.map(p => [
+          p.nome,
+          p.telefone,
+          p.convenio,
+          p.status,
+          formatD(p.data_cadastro)
+        ]);
+      } else if (reportType === 'crescimento') {
+        titleText = 'Relatório de Crescimento Clínico (2026)';
+        tableHeaders = [['Mês / 2026', 'Entradas', 'Saídas', 'Crescimento Líquido', 'Retenção (%)']];
+        tableRows = growthReportData.map(g => [
+          g.mes,
+          g.entradas,
+          g.saidas,
+          g.crescimentoNet,
+          `${g.retencao.toFixed(1)}%`
+        ]);
+      } else if (reportType === 'desistencias') {
+        titleText = 'Relatório de Desistências de Pacientes';
+        tableHeaders = [['Nome do Paciente', 'Data Desistência', 'Motivo da Desistência']];
+        tableRows = desistenciasReportData.map(d => [
+          d.nome,
+          formatD(d.data),
+          d.motivo
+        ]);
+      }
+
+      doc.setTextColor(13, 46, 94);
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.text(titleText, 15, 42);
+
+      console.log('Chamando autoTable com cabeçalhos:', tableHeaders, 'e linhas:', tableRows.length);
+      // Call AutoTable plugin
+      autoTable(doc, {
+        startY: 48,
+        head: tableHeaders,
+        body: tableRows,
+        theme: 'striped',
+        headStyles: { 
+          fillColor: [13, 46, 94], 
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold'
+        },
+        bodyStyles: { fontSize: 9 },
+        margin: { horizontal: 15 },
+      });
+
+      const finalFileName = reportType === 'pacientes' ? 'relatorio_pacientes.pdf' :
+                            reportType === 'crescimento' ? 'relatorio_crescimento.pdf' :
+                            'relatorio_desistencias.pdf';
+
+      console.log('Salvando documento PDF:', finalFileName);
+      doc.save(finalFileName);
+      console.log('PDF exportado com sucesso!');
+    } catch (err) {
+      console.error('Erro ao gerar PDF:', err);
+      alert('Erro ao gerar relatório em PDF. Por favor, tente novamente.');
     }
-
-    doc.setTextColor(13, 46, 94);
-    doc.setFont('Helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text(titleText, 15, 42);
-
-    // Call AutoTable plugin
-    (doc as any).autoTable({
-      startY: 48,
-      head: tableHeaders,
-      body: tableRows,
-      theme: 'striped',
-      headStyles: { 
-        fillColor: [13, 46, 94], 
-        textColor: [255, 255, 255],
-        fontSize: 10,
-        fontStyle: 'bold'
-      },
-      bodyStyles: { fontSize: 9 },
-      margin: { horizontal: 15 },
-    });
-
-    const finalFileName = reportType === 'pacientes' ? 'relatorio_pacientes.pdf' :
-                          reportType === 'crescimento' ? 'relatorio_crescimento.pdf' :
-                          'relatorio_desistencias.pdf';
-
-    doc.save(finalFileName);
   };
 
   return (
