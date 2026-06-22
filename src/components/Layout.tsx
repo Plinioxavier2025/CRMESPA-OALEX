@@ -51,8 +51,21 @@ export const Layout: React.FC<LayoutProps> = ({
       <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-brand-blue-primary/10 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-green-primary/5 rounded-full blur-[130px] pointer-events-none" />
 
+      {/* Subtle background brand watermark (white silhouette for dark background) */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.08] select-none">
+        <img 
+          src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
+          alt="Watermark Logo" 
+          className="w-1/2 max-w-2xl h-auto object-contain"
+          onError={(e) => {
+            (e.target as HTMLElement).style.display = 'none';
+          }}
+        />
+      </div>
+
       {sidebar}
       {/* Top Navbar & Contents Container */}
+
 
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative z-10 ${
         collapsed ? 'md:pl-20' : 'md:pl-64'
@@ -109,9 +122,9 @@ export const Layout: React.FC<LayoutProps> = ({
             </button>
 
             {/* Brand Logo inside Navbar */}
-            <div className="h-9 flex items-center pl-2 border-l border-slate-100">
+            <div className="h-9 flex items-center pl-2 border-l border-slate-800">
               <img 
-                src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipo.png" 
+                src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
                 alt="Logo Espaço Alex" 
                 className="h-8 w-auto object-contain max-w-[120px] select-none"
                 onError={(e) => {
@@ -125,18 +138,6 @@ export const Layout: React.FC<LayoutProps> = ({
 
         {/* Main Content Pane */}
         <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl w-full mx-auto animate-slide-up relative dark-theme-main">
-          {/* Subtle background brand watermark */}
-          <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.025] select-none">
-            <img 
-              src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipo.png" 
-              alt="Watermark Logo" 
-              className="w-1/2 max-w-md h-auto object-contain"
-              onError={(e) => {
-                (e.target as HTMLElement).style.display = 'none';
-              }}
-            />
-          </div>
-
           <div className="relative z-10">
             {children}
           </div>
@@ -154,7 +155,7 @@ export const Layout: React.FC<LayoutProps> = ({
           />
 
           {/* Drawer Panel */}
-          <div className="relative w-full max-w-md bg-white h-full shadow-2xl border-l border-slate-100 flex flex-col z-50 animate-fade-in">
+          <div className="relative w-full max-w-md bg-white h-full shadow-2xl border-l border-slate-100 flex flex-col z-50 animate-fade-in dark-theme-main">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <History className="w-5 h-5 text-brand-blue-dark" />
