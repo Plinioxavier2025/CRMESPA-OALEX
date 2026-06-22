@@ -137,18 +137,6 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               Acompanhe o fluxo de pacientes, meça a taxa de retenção da clínica, faça análises mensais e emita relatórios com praticidade e segurança.
             </p>
           </div>
-
-          <div className="text-xs text-slate-400 font-light flex items-center gap-1 relative z-10">
-            <span>Acesse o site oficial: </span>
-            <a 
-              href="https://www.espacoalexsilveira.com.br" 
-              target="_blank" 
-              rel="noreferrer" 
-              className="text-emerald-400 hover:underline hover:text-emerald-300 font-semibold"
-            >
-              espacoalexsilveira.com.br
-            </a>
-          </div>
         </div>
 
         {/* Right Side: Sign-in form panel */}
