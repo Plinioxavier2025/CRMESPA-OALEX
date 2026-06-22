@@ -10,7 +10,8 @@ import {
   Percent, 
   Calendar,
   Layers,
-  Activity
+  Activity,
+  ShieldAlert
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -35,6 +36,63 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
   // Time context variables based on selection (Defaults to June 2026 as current simulation month)
   const [selectedMonth, setSelectedMonth] = useState('06');
   const [selectedYear, setSelectedYear] = useState('2026');
+  
+  const [seeding, setSeeding] = useState(false);
+  const [dbError, setDbError] = useState<any>(null);
+
+  const handleSeedData = async () => {
+    setSeeding(true);
+    try {
+      const mockPacientes = [
+        // Janeiro 2026
+        { nome: 'Mariana Santos Rodrigues', telefone: '(11) 98765-4321', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-01-15', hora_cadastro: '09:30:00' },
+        { nome: 'Carlos Eduardo Ramos', telefone: '(11) 97765-8822', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-01-20', hora_cadastro: '14:00:00' },
+        { nome: 'Beatriz Vasconcelos', telefone: '(11) 95432-1098', convenio: 'Care Plus', status: 'Desistiu', motivo_desistencia: 'Questão financeira', data_cadastro: '2026-01-22', hora_cadastro: '16:45:00' },
+        // Fevereiro 2026
+        { nome: 'Juliana Paes de Oliveira', telefone: '(11) 96543-2109', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-02-05', hora_cadastro: '10:00:00' },
+        { nome: 'Rodrigo Faro Nogueira', telefone: '(11) 91234-5678', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-02-12', hora_cadastro: '11:30:00' },
+        { nome: 'Renata Lins Albuquerque', telefone: '(11) 92345-6789', convenio: 'Vivest', status: 'Desistiu', motivo_desistencia: 'Mudança de cidade', data_cadastro: '2026-02-18', hora_cadastro: '08:15:00' },
+        // Março 2026
+        { nome: 'Lucas Medeiros Santos', telefone: '(11) 99887-7665', convenio: 'Care Plus', status: 'Ativo', data_cadastro: '2026-03-03', hora_cadastro: '15:00:00' },
+        { nome: 'Aline de Souza Ferreira', telefone: '(11) 93456-7890', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-03-10', hora_cadastro: '17:30:00' },
+        { nome: 'Gustavo Henrique Costa', telefone: '(11) 94567-8901', convenio: 'Vivest', status: 'Desistiu', motivo_desistencia: 'Alta terapêutica', data_cadastro: '2026-03-25', hora_cadastro: '14:15:00' },
+        // Abril 2026
+        { nome: 'Patrícia Pillar Mendes', telefone: '(11) 95678-9012', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-04-02', hora_cadastro: '10:30:00' },
+        { nome: 'Felipe Camargo Rezende', telefone: '(11) 96789-0123', convenio: 'Care Plus', status: 'Ativo', data_cadastro: '2026-04-14', hora_cadastro: '09:00:00' },
+        { nome: 'Letícia Spiller Lima', telefone: '(11) 97890-1234', convenio: 'Particular', status: 'Desistiu', motivo_desistencia: 'Falta de tempo', data_cadastro: '2026-04-20', hora_cadastro: '11:15:00' },
+        // Maio 2026
+        { nome: 'Thiago Lacerda Santos', telefone: '(11) 98901-2345', convenio: 'Vivest', status: 'Ativo', data_cadastro: '2026-05-04', hora_cadastro: '16:00:00' },
+        { nome: 'Fernanda Montenegro', telefone: '(11) 99012-3456', convenio: 'Particular', status: 'Novo Cliente', data_cadastro: '2026-05-18', hora_cadastro: '14:30:00' },
+        { nome: 'Tony Ramos Fernandes', telefone: '(11) 90123-4567', convenio: 'SulAmérica', status: 'Desistiu', motivo_desistencia: 'Insatisfação', data_cadastro: '2026-05-22', hora_cadastro: '15:15:00' },
+        // Junho 2026
+        { nome: 'Cláudia Abreu Fonseca', telefone: '(11) 91234-8765', convenio: 'Care Plus', status: 'Novo Cliente', data_cadastro: '2026-06-02', hora_cadastro: '10:00:00' },
+        { nome: 'Fábio Assunção Becker', telefone: '(11) 92345-9876', convenio: 'Vivest', status: 'Ativo', data_cadastro: '2026-06-08', hora_cadastro: '09:15:00' },
+        { nome: 'Glória Pires de Souza', telefone: '(11) 93456-0987', convenio: 'Particular', status: 'Desistiu', motivo_desistencia: 'Outro: Indicada a outro especialista em TDAH de crianças', data_cadastro: '2026-06-11', hora_cadastro: '14:00:00' },
+        { nome: 'Marcos Palmeira Neto', telefone: '(11) 94567-2109', convenio: 'SulAmérica', status: 'Novo Cliente', data_cadastro: '2026-06-15', hora_cadastro: '16:00:00' }
+      ];
+
+      for (const p of mockPacientes) {
+        await db.savePaciente({
+          nome: p.nome,
+          telefone: p.telefone,
+          convenio: p.convenio,
+          status: p.status as any,
+          motivo_desistencia: p.motivo_desistencia,
+          usuario_cadastro: 'Sistema (Carga Inicial)',
+          data_cadastro: p.data_cadastro,
+          hora_cadastro: p.hora_cadastro
+        });
+      }
+
+      await db.addLog('Sistema', 'Importação Inicial', 'Banco de dados online populado com os 19 pacientes de teste.');
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao carregar dados de teste.');
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const monthsOptions = [
     { value: '01', label: 'Janeiro' },
@@ -56,8 +114,10 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
       try {
         const data = await db.getPacientes();
         setPatients(data);
-      } catch (e) {
+        setDbError(null);
+      } catch (e: any) {
         console.error(e);
+        setDbError(e);
       } finally {
         setLoading(false);
       }
@@ -116,7 +176,7 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
   // ----------------------------------------------------
   const statusPieData = [
     { name: 'Ativos', value: activePatients, color: '#059669' },
-    { name: 'Novos', value: newPatients, color: '#3B82F6' },
+    { name: 'Novos', value: newPatients, color: '#94A3B8' },
     { name: 'Desistentes', value: desistentesPatients, color: '#EF4444' }
   ];
 
@@ -192,7 +252,7 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
     value: reasonsCount[name]
   })).filter(item => item.value > 0);
 
-  const REASONS_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280'];
+  const REASONS_COLORS = ['#94A3B8', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280'];
 
   return (
     <div className="space-y-6">
@@ -230,6 +290,49 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
         </div>
       </div>
 
+      {dbError && (
+        <div className="bg-slate-900/60 backdrop-blur-md border border-red-500/30 p-6 rounded-3xl text-white shadow-xl space-y-4 animate-slide-up">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-red-500/10 text-red-400 rounded-2xl">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-red-400 font-outfit">Tabelas não encontradas no Supabase</h3>
+              <p className="text-xs text-slate-300 font-light mt-1 leading-relaxed">
+                A conexão com a nuvem Supabase está ativa, mas as tabelas do CRM (<code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">pacientes</code>, <code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">logs</code>, <code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">configuracoes</code>, <code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">usuarios</code>) não foram encontradas. Por isso, os gráficos não estão carregando.
+              </p>
+            </div>
+          </div>
+          <div className="bg-slate-950/70 p-5 rounded-2xl border border-white/5 space-y-3">
+            <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Como resolver isso:</h4>
+            <ul className="list-decimal list-inside text-xs text-slate-300 space-y-2 font-light leading-relaxed">
+              <li>Acesse o painel do seu projeto no <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-emerald-400 font-semibold hover:underline">Supabase Console</a>.</li>
+              <li>No menu lateral esquerdo, clique na opção <strong>SQL Editor</strong>.</li>
+              <li>Clique em <strong>New Query</strong> para criar uma consulta SQL em branco.</li>
+              <li>Abra o arquivo <code className="text-emerald-400 bg-slate-900/80 px-1 py-0.5 rounded font-mono">supabase_schema.sql</code> localizado na raiz da pasta do seu projeto CRM, copie todo o seu conteúdo de código, cole no SQL Editor do Supabase e clique em <strong>Run</strong> (ou aperte Ctrl+Enter).</li>
+              <li>Após rodar com sucesso, recarregue esta página do CRM!</li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {!dbError && totalPatients === 0 && (
+        <div className="bg-slate-900/50 backdrop-blur-md border border-amber-500/20 p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 text-xs dark-theme-main">
+          <div className="space-y-1 text-center md:text-left">
+            <span className="font-bold text-amber-400 block text-sm">Banco de Dados Vazio</span>
+            <p className="text-slate-350 font-light leading-relaxed">
+              O seu banco de dados online foi conectado com sucesso, mas ainda não possui nenhum paciente cadastrado. Deseja carregar os 19 pacientes de teste para começar a visualizar os gráficos e estatísticas da clínica?
+            </p>
+          </div>
+          <button
+            onClick={handleSeedData}
+            disabled={seeding}
+            className="w-full md:w-auto px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap disabled:opacity-50"
+          >
+            {seeding ? 'Carregando...' : 'Carregar Pacientes de Teste'}
+          </button>
+        </div>
+      )}
 
       {/* Primary Indicator Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -349,12 +452,12 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
           <div className="h-[280px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
                 <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Bar dataKey="Novas Entradas" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={16} />
+                <Bar dataKey="Novas Entradas" fill="#94A3B8" radius={[4, 4, 0, 0]} barSize={16} />
                 <Bar dataKey="Desistências" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={16} />
               </BarChart>
             </ResponsiveContainer>
@@ -386,7 +489,7 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`${value} pacientes`]} contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                <Tooltip formatter={(value) => [`${value} pacientes`]} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
               </PieChart>
             </ResponsiveContainer>
             
@@ -430,10 +533,10 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
           <div className="h-[260px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={lineChartData} margin={{ top: 10, right: 15, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
                 <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                <Tooltip cursor={{ stroke: 'rgba(255, 255, 255, 0.1)', strokeWidth: 1 }} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
                 <Line 
                   type="monotone" 
                   dataKey="Pacientes Ativos" 
@@ -480,7 +583,7 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
                         <Cell key={`cell-${index}`} fill={REASONS_COLORS[index % REASONS_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [`${value} desistências`]} contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                    <Tooltip formatter={(value) => [`${value} desistências`]} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>

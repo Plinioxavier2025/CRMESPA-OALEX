@@ -9,7 +9,8 @@ import {
   UserPlus, 
   UserMinus, 
   TrendingUp, 
-  Percent
+  Percent,
+  ShieldAlert
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -34,6 +35,7 @@ export const MonthlyAnalysis: React.FC = () => {
   // Selected Month and Year (defaulting to current simulation month: June 2026)
   const [selectedMonth, setSelectedMonth] = useState('06');
   const [selectedYear, setSelectedYear] = useState('2026');
+  const [dbError, setDbError] = useState<any>(null);
 
   const monthsList = [
     { value: '01', label: 'Janeiro' },
@@ -57,8 +59,10 @@ export const MonthlyAnalysis: React.FC = () => {
       try {
         const data = await db.getPacientes();
         setPatients(data);
-      } catch (e) {
+        setDbError(null);
+      } catch (e: any) {
         console.error(e);
+        setDbError(e);
       } finally {
         setLoading(false);
       }
@@ -122,7 +126,7 @@ export const MonthlyAnalysis: React.FC = () => {
   // ----------------------------------------------------
   const statusPieData = [
     { name: 'Ativos', value: ativosFimMes, color: '#059669' },
-    { name: 'Novos no Mês', value: novosMes, color: '#3B82F6' },
+    { name: 'Novos no Mês', value: novosMes, color: '#94A3B8' },
     { name: 'Desistências no Mês', value: desistentesMes, color: '#EF4444' }
   ];
 
@@ -209,7 +213,7 @@ export const MonthlyAnalysis: React.FC = () => {
     value: reasonsCount[name]
   })).filter(item => item.value > 0);
 
-  const REASONS_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280'];
+  const REASONS_COLORS = ['#94A3B8', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280'];
 
   return (
     <div className="space-y-6">
@@ -250,6 +254,32 @@ export const MonthlyAnalysis: React.FC = () => {
           </select>
         </div>
       </div>
+
+      {dbError && (
+        <div className="bg-slate-900/60 backdrop-blur-md border border-red-500/30 p-6 rounded-3xl text-white shadow-xl space-y-4 animate-slide-up">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-red-500/10 text-red-400 rounded-2xl">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-red-400 font-outfit">Tabelas não encontradas no Supabase</h3>
+              <p className="text-xs text-slate-300 font-light mt-1 leading-relaxed">
+                A conexão com a nuvem Supabase está activa, mas as tabelas do CRM (<code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">pacientes</code>, <code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">logs</code>, <code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">configuracoes</code>, <code className="bg-slate-950 px-1 py-0.5 rounded font-mono text-slate-200">usuarios</code>) não foram encontradas. Por isso, as análises de desempenho não estão carregando.
+              </p>
+            </div>
+          </div>
+          <div className="bg-slate-950/70 p-5 rounded-2xl border border-white/5 space-y-3">
+            <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Como resolver isso:</h4>
+            <ul className="list-decimal list-inside text-xs text-slate-350 space-y-2 font-light leading-relaxed">
+              <li>Acesse o painel do seu projeto no <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-emerald-400 font-semibold hover:underline">Supabase Console</a>.</li>
+              <li>No menu lateral esquerdo, clique na opção <strong>SQL Editor</strong>.</li>
+              <li>Clique em <strong>New Query</strong> para criar uma consulta SQL em branco.</li>
+              <li>Abra o arquivo <code className="text-emerald-400 bg-slate-900/80 px-1 py-0.5 rounded font-mono">supabase_schema.sql</code> localizado na raiz da pasta do seu projeto CRM, copie todo o seu conteúdo de código, cole no SQL Editor do Supabase e clique em <strong>Run</strong> (ou aperte Ctrl+Enter).</li>
+              <li>Após rodar com sucesso, recarregue esta página do CRM!</li>
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Analytics Resumo Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
@@ -329,12 +359,12 @@ export const MonthlyAnalysis: React.FC = () => {
           <div className="h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={trendData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
                 <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Bar dataKey="Entradas" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={16} />
+                <Bar dataKey="Entradas" fill="#94A3B8" radius={[4, 4, 0, 0]} barSize={16} />
                 <Bar dataKey="Saídas" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={16} />
               </BarChart>
             </ResponsiveContainer>
@@ -363,7 +393,7 @@ export const MonthlyAnalysis: React.FC = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`${value} pacientes`]} contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                <Tooltip formatter={(value) => [`${value} pacientes`]} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
               </PieChart>
             </ResponsiveContainer>
             
@@ -402,10 +432,10 @@ export const MonthlyAnalysis: React.FC = () => {
           <div className="h-[240px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={evolutionData} margin={{ top: 10, right: 15, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
                 <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                <Tooltip cursor={{ stroke: 'rgba(255, 255, 255, 0.1)', strokeWidth: 1 }} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
                 <Line 
                   type="monotone" 
                   dataKey="Pacientes Ativos" 
@@ -448,7 +478,7 @@ export const MonthlyAnalysis: React.FC = () => {
                         <Cell key={`cell-${index}`} fill={REASONS_COLORS[index % REASONS_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [`${value} saídas`]} contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '12px' }} />
+                    <Tooltip formatter={(value) => [`${value} saídas`]} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
