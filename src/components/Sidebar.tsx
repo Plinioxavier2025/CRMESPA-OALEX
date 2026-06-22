@@ -10,8 +10,7 @@ import {
   UserCog, 
   LogOut, 
   ChevronLeft, 
-  ChevronRight,
-  HeartPulse
+  ChevronRight
 } from 'lucide-react';
 
 interface SidebarProps {

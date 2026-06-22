@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { db } from '../services/db';
 import type { Usuario } from '../services/db';
 import { supabase } from '../services/supabase';
-import { HeartPulse, Mail, Lock, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ShieldAlert, ArrowRight } from 'lucide-react';
 
 interface LoginProps {
   onLoginSuccess: (user: Omit<Usuario, 'senha'>) => void;
