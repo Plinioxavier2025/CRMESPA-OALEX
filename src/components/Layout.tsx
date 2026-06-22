@@ -52,7 +52,7 @@ export const Layout: React.FC<LayoutProps> = ({
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-green-primary/5 rounded-full blur-[130px] pointer-events-none" />
 
       {/* Subtle background brand watermark (white silhouette for dark background) */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.08] select-none">
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.16] select-none">
         <img 
           src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
           alt="Watermark Logo" 

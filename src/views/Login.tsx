@@ -88,8 +88,8 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-blue-primary/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-green-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Subtle brand background watermark */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+      {/* Subtle page-level background watermark */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
         {!logoFailed && (
           <img 
             src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
@@ -100,10 +100,21 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       </div>
 
       {/* Main glass container */}
-      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden border border-slate-800/60 bg-[#0d1321]/50 backdrop-blur-xl shadow-2xl relative z-10 animate-slide-up">
+      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden border border-white/10 bg-slate-950/25 backdrop-blur-2xl shadow-2xl relative z-10 animate-slide-up">
         
+        {/* Transparent logo watermark inside the card, behind elements */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.08] select-none">
+          {!logoFailed && (
+            <img 
+              src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
+              alt="Watermark Logo Card" 
+              className="w-[55%] max-w-md h-auto object-contain filter drop-shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+            />
+          )}
+        </div>
+
         {/* Left Side: Welcoming brand introduction */}
-        <div className="p-8 md:p-12 bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0A0F1D] flex flex-col justify-between border-r border-slate-800/50 text-white relative">
+        <div className="p-8 md:p-12 bg-white/[0.02] flex flex-col justify-between border-r border-white/5 text-white relative z-10">
           {/* Subtle glow layer */}
           <div className="absolute inset-0 bg-gradient-to-tr from-brand-green-primary/5 to-transparent pointer-events-none" />
           
@@ -133,27 +144,27 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               Gestão acolhedora, <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-300">clínica organizada.</span>
             </h1>
-            <p className="text-slate-400 text-sm font-light leading-relaxed max-w-sm">
+            <p className="text-slate-350 text-sm font-light leading-relaxed max-w-sm">
               Acompanhe o fluxo de pacientes, meça a taxa de retenção da clínica, faça análises mensais e emita relatórios com praticidade e segurança.
             </p>
           </div>
         </div>
 
         {/* Right Side: Sign-in form panel */}
-        <div className="p-8 md:p-12 bg-white flex flex-col justify-center border-l border-slate-100">
+        <div className="p-8 md:p-12 bg-white/[0.01] flex flex-col justify-center border-l border-white/5 text-white relative z-10">
           <div className="mb-8">
-            <h2 className="text-2xl font-black text-slate-800 font-outfit">Acesso ao Sistema</h2>
-            <p className="text-xs text-slate-400 font-light mt-1.5 leading-relaxed">
+            <h2 className="text-2xl font-black text-white font-outfit">Acesso ao Sistema</h2>
+            <p className="text-xs text-slate-350 font-light mt-1.5 leading-relaxed">
               Entre com suas credenciais de administrador para acessar o painel de gestão.
             </p>
           </div>
 
           {error && (
-            <div className="mb-5 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 text-xs text-red-700 animate-fade-in shadow-sm">
-              <ShieldAlert className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <div className="mb-5 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start gap-3 text-xs text-red-300 animate-fade-in shadow-sm">
+              <ShieldAlert className="w-5 h-5 text-red-400 flex-shrink-0" />
               <div>
                 <span className="font-bold block">Falha de Autenticação</span>
-                <p className="mt-0.5 font-light leading-relaxed text-red-650">{error}</p>
+                <p className="mt-0.5 font-light leading-relaxed text-red-250">{error}</p>
               </div>
             </div>
           )}
@@ -173,7 +184,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                   placeholder="exemplo@espacoalexsilveira.com.br"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 focus:border-brand-blue-primary focus:ring-1 focus:ring-brand-blue-primary/20 text-sm outline-none transition-all placeholder:text-slate-400 bg-slate-50/50 focus:bg-white"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-white/10 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 text-sm outline-none transition-all placeholder:text-slate-500 bg-white/5 focus:bg-white/10 text-white"
                 />
               </div>
             </div>
@@ -192,7 +203,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 focus:border-brand-blue-primary focus:ring-1 focus:ring-brand-blue-primary/20 text-sm outline-none transition-all placeholder:text-slate-400 bg-slate-50/50 focus:bg-white"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-white/10 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 text-sm outline-none transition-all placeholder:text-slate-500 bg-white/5 focus:bg-white/10 text-white"
                 />
               </div>
             </div>
@@ -201,7 +212,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-2xl shadow-lg shadow-slate-900/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-[0.99] text-slate-950 font-bold rounded-2xl shadow-lg shadow-emerald-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 font-outfit text-sm"
             >
               <span>{loading ? 'Verificando...' : 'Acessar CRM'}</span>
               {!loading && <ArrowRight className="w-4 h-4" />}
@@ -212,14 +223,14 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <div className="mt-8 text-center">
             <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-3 py-1 rounded-full ${
               isCloud 
-                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
-                : 'bg-amber-50 text-amber-600 border border-amber-100'
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
             }`}>
               {isCloud ? 'Nuvem Supabase Ativa' : 'Banco de Dados Local Ativo'}
             </span>
             {!isCloud && (
-              <p className="text-[10px] text-slate-400 font-light mt-2 max-w-xs mx-auto">
-                Dica: Logins pre-configurados: <code className="bg-slate-50 px-1 py-0.5 rounded font-mono text-slate-500 font-medium">alex@espacoalexsilveira.com.br</code> com senha <code className="bg-slate-50 px-1 py-0.5 rounded font-mono text-slate-500 font-medium">admin</code>.
+              <p className="text-[10px] text-slate-500 font-light mt-2 max-w-xs mx-auto">
+                Dica: Logins pre-configurados: <code className="bg-white/5 px-1 py-0.5 rounded font-mono text-slate-300 font-medium">alex@espacoalexsilveira.com.br</code> com senha <code className="bg-white/5 px-1 py-0.5 rounded font-mono text-slate-300 font-medium">admin</code>.
               </p>
             )}
           </div>
