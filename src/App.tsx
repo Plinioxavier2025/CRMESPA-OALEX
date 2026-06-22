@@ -91,7 +91,9 @@ function App() {
     >
       {/* Sub-views routing logic */}
       <div className="w-full">
-        {currentTab === 'dashboard' && <Dashboard />}
+        {currentTab === 'dashboard' && (
+          <Dashboard setCurrentTab={setCurrentTab} />
+        )}
         {currentTab === 'pacientes' && (
           <PatientsList activeUserName={user.nome} />
         )}

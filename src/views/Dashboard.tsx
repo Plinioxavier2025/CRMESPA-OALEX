@@ -28,13 +28,28 @@ import {
   CartesianGrid 
 } from 'recharts';
 
-export const Dashboard: React.FC = () => {
+export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ setCurrentTab }) => {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Time context variables based on simulation (June 2026)
-  const currentYear = 2026;
-  const currentMonthStr = '06'; // June
+  // Time context variables based on selection (Defaults to June 2026 as current simulation month)
+  const [selectedMonth, setSelectedMonth] = useState('06');
+  const [selectedYear, setSelectedYear] = useState('2026');
+
+  const monthsOptions = [
+    { value: '01', label: 'Janeiro' },
+    { value: '02', label: 'Fevereiro' },
+    { value: '03', label: 'Março' },
+    { value: '04', label: 'Abril' },
+    { value: '05', label: 'Maio' },
+    { value: '06', label: 'Junho' },
+    { value: '07', label: 'Julho' },
+    { value: '08', label: 'Agosto' },
+    { value: '09', label: 'Setembro' },
+    { value: '10', label: 'Outubro' },
+    { value: '11', label: 'Novembro' },
+    { value: '12', label: 'Dezembro' }
+  ];
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -49,6 +64,7 @@ export const Dashboard: React.FC = () => {
     };
     fetchPatients();
   }, []);
+
 
   if (loading) {
     return (
@@ -66,24 +82,27 @@ export const Dashboard: React.FC = () => {
   const newPatients = patients.filter(p => p.status === 'Novo Cliente').length;
   const desistentesPatients = patients.filter(p => p.status === 'Desistiu').length;
 
-  const prefix = `${currentYear}-${currentMonthStr}`;
+
+
+  const prefix = `${selectedYear}-${selectedMonth}`;
   const novosMes = patients.filter(p => p.data_cadastro.startsWith(prefix)).length;
   const desistentesMes = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(prefix)).length;
 
   // Clientes Cadastrados no Mês / Ano
   const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix)).length;
-  const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(String(currentYear))).length;
+  const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(selectedYear)).length;
 
-  // Math calculation for Growth comparing June to May
-  // Active in May (Registered before 2026-06-01 and didn't drop out before 2026-06-01)
-  const activeInMay = patients.filter(p => {
-    const registeredBeforeJune = p.data_cadastro < '2026-06-01';
-    const isDesistenteBeforeJune = p.status === 'Desistiu' && p.data_ultima_atualizacao < '2026-06-01';
-    return registeredBeforeJune && !isDesistenteBeforeJune;
+  // Math calculation for Growth comparing selected month to previous month
+  const selectedMonthStart = `${selectedYear}-${selectedMonth}-01`;
+
+  const activeInPrevMonth = patients.filter(p => {
+    const registeredBefore = p.data_cadastro < selectedMonthStart;
+    const isDesistenteBefore = p.status === 'Desistiu' && p.data_ultima_atualizacao < selectedMonthStart;
+    return registeredBefore && !isDesistenteBefore;
   }).length;
 
-  const growthRate = activeInMay > 0 
-    ? ((novosMes - desistentesMes) / activeInMay) * 100 
+  const growthRate = activeInPrevMonth > 0 
+    ? ((novosMes - desistentesMes) / activeInPrevMonth) * 100 
     : 0;
 
   // Retention Rate: (Active + New) / Total Patients * 100
@@ -109,9 +128,11 @@ export const Dashboard: React.FC = () => {
     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
   ];
 
+  const selectedMonthNum = Number(selectedMonth);
+
   const barChartData = monthsNames.map((name, index) => {
     const monthNum = String(index + 1).padStart(2, '0');
-    const monthPrefix = `${currentYear}-${monthNum}`;
+    const monthPrefix = `${selectedYear}-${monthNum}`;
 
     const entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix)).length;
     const exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix)).length;
@@ -121,14 +142,14 @@ export const Dashboard: React.FC = () => {
       'Novas Entradas': entries,
       'Desistências': exits
     };
-  }).slice(0, 6); // Expose Jan to June (First semester of 2026)
+  }).slice(0, selectedMonthNum); // Dynamic slice up to the selected month
 
   // ----------------------------------------------------
   // CHART DATA: HISTORICAL EVOLUTION LINE
   // ----------------------------------------------------
   const lineChartData = monthsNames.map((name, index) => {
     const monthNum = String(index + 1).padStart(2, '0');
-    const lastDayStr = `${currentYear}-${monthNum}-31`; // generic cutoff
+    const lastDayStr = `${selectedYear}-${monthNum}-31`; // generic cutoff
     
     // Count active patients at that point in time
     const activeAtMonth = patients.filter(p => {
@@ -141,7 +162,7 @@ export const Dashboard: React.FC = () => {
       name,
       'Pacientes Ativos': activeAtMonth
     };
-  }).slice(0, 6);
+  }).slice(0, selectedMonthNum); // Dynamic slice up to the selected month
 
   // ----------------------------------------------------
   // CHART DATA: DROPOUT REASONS PIE
@@ -182,15 +203,33 @@ export const Dashboard: React.FC = () => {
           <div className="space-y-1">
             <h2 className="text-2xl font-bold font-outfit text-white">Painel Executivo</h2>
             <p className="text-xs text-slate-200 font-light max-w-xl">
-              Bem-vindo ao CRM do Espaço Alex Silveira. Aqui estão compilados os indicadores de atração, crescimento e retenção da clínica para o mês de Junho de 2026.
+              Bem-vindo ao CRM do Espaço Alex Silveira. Aqui estão compilados os indicadores de atração, crescimento e retenção da clínica para o mês de {monthsOptions.find(m => m.value === selectedMonth)?.label} de {selectedYear}.
             </p>
           </div>
           <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2.5 rounded-2xl border border-white/10 text-xs">
-            <Calendar className="w-4.5 h-4.5 text-emerald-400" />
-            <span>Mês de Referência: <strong>Junho / 2026</strong></span>
+            <Calendar className="w-4 h-4 text-emerald-400" />
+            <span className="font-semibold mr-1">Filtrar:</span>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="bg-transparent text-white font-bold outline-none border-none cursor-pointer focus:ring-0 focus:outline-none [&>option]:text-slate-800 p-0 mr-1"
+            >
+              {monthsOptions.map(m => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="bg-transparent text-white font-bold outline-none border-none cursor-pointer focus:ring-0 focus:outline-none [&>option]:text-slate-800 p-0"
+            >
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+            </select>
           </div>
         </div>
       </div>
+
 
       {/* Primary Indicator Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -299,9 +338,12 @@ export const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Bar Chart: Entradas vs Saídas */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2 flex flex-col space-y-4">
+        <div 
+          onClick={() => setCurrentTab('analise')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2 flex flex-col space-y-4 cursor-pointer hover:border-brand-blue-primary/30 hover:shadow-md transition-all group"
+        >
           <div>
-            <h3 className="font-bold text-base text-brand-blue-dark font-outfit">Fluxo Mensal de Entradas e Saídas</h3>
+            <h3 className="font-bold text-base text-brand-blue-dark font-outfit group-hover:text-brand-blue-primary transition-colors">Fluxo Mensal de Entradas e Saídas</h3>
             <p className="text-xs text-slate-400 font-light mt-0.5">Estatísticas comparativas de novas consultas e saídas de pacientes.</p>
           </div>
           <div className="h-[280px] w-full">
@@ -320,9 +362,12 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Status Distribution Pizza */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col space-y-4">
+        <div 
+          onClick={() => setCurrentTab('pacientes')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col space-y-4 cursor-pointer hover:border-brand-blue-primary/30 hover:shadow-md transition-all group"
+        >
           <div>
-            <h3 className="font-bold text-base text-brand-blue-dark font-outfit">Distribuição de Status</h3>
+            <h3 className="font-bold text-base text-brand-blue-dark font-outfit group-hover:text-brand-blue-primary transition-colors">Distribuição de Status</h3>
             <p className="text-xs text-slate-400 font-light mt-0.5">Composição percentual dos pacientes cadastrados.</p>
           </div>
           <div className="h-[220px] w-full relative flex items-center justify-center">
@@ -371,12 +416,15 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Lower Row Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         
         {/* Line Chart: Active patient progression */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2 flex flex-col space-y-4">
+        <div 
+          onClick={() => setCurrentTab('analise')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2 flex flex-col space-y-4 cursor-pointer hover:border-brand-blue-primary/30 hover:shadow-md transition-all group"
+        >
           <div>
-            <h3 className="font-bold text-base text-brand-blue-dark font-outfit">Evolução de Pacientes Ativos</h3>
+            <h3 className="font-bold text-base text-brand-blue-dark font-outfit group-hover:text-brand-blue-primary transition-colors">Evolução de Pacientes Ativos</h3>
             <p className="text-xs text-slate-400 font-light mt-0.5">Curva acumulada de pacientes ativos na clínica ao longo dos meses.</p>
           </div>
           <div className="h-[260px] w-full">
@@ -400,11 +448,15 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Reasons of Dropout Pie Chart */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col space-y-4">
+        <div 
+          onClick={() => setCurrentTab('analise')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col space-y-4 cursor-pointer hover:border-brand-blue-primary/30 hover:shadow-md transition-all group"
+        >
           <div>
-            <h3 className="font-bold text-base text-brand-blue-dark font-outfit">Motivos de Desistência</h3>
+            <h3 className="font-bold text-base text-brand-blue-dark font-outfit group-hover:text-brand-blue-primary transition-colors">Motivos de Desistência</h3>
             <p className="text-xs text-slate-400 font-light mt-0.5">Motivos de abandono terapêutico mapeados.</p>
           </div>
+
           
           {reasonsPieData.length === 0 ? (
             <div className="flex-1 flex items-center justify-center text-center p-6 text-slate-400 text-xs font-light">
