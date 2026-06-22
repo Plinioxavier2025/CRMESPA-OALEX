@@ -271,3 +271,46 @@ header.sticky {
 .from-brand-blue-dark strong {
   color: #ffffff !important;
 }
+
+/* ====================================================
+   PREMIUM BACKGROUND FLOATING & GLOW ANIMATIONS
+   ==================================================== */
+
+@keyframes floatSlow {
+  0% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg) scale(1.02);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.06;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.12;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 0.06;
+    transform: scale(1);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 14s ease-in-out infinite;
+}
+
+.animate-pulse-glow-1 {
+  animation: pulseGlow 15s ease-in-out infinite;
+}
+
+.animate-pulse-glow-2 {
+  animation: pulseGlow 22s ease-in-out infinite;
+}

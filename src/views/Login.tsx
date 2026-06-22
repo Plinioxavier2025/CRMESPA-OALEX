@@ -85,11 +85,11 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-brand-blue-dark via-[#0f172a] to-[#0A2E36] px-4 py-12 relative overflow-hidden">
       
       {/* Decorative calm background blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-blue-primary/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-green-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse-glow-1" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-sky-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse-glow-2" />
 
-      {/* Subtle page-level background watermark */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
+      {/* Subtle page-level background watermark (Floating logo) */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.07] animate-float-slow">
         {!logoFailed && (
           <img 
             src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
@@ -103,7 +103,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden border border-white/10 bg-slate-950/25 backdrop-blur-2xl shadow-2xl relative z-10 animate-slide-up">
         
         {/* Transparent logo watermark inside the card, behind elements */}
-        <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.08] select-none">
+        <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.12] select-none animate-float-slow">
           {!logoFailed && (
             <img 
               src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 

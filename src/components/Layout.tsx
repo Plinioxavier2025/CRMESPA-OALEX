@@ -48,11 +48,11 @@ export const Layout: React.FC<LayoutProps> = ({
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex relative overflow-hidden">
       {/* Decorative calm background glows */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-emerald-500/10 rounded-full blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-sky-500/10 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-emerald-500/10 rounded-full blur-[130px] pointer-events-none animate-pulse-glow-1" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-sky-500/10 rounded-full blur-[130px] pointer-events-none animate-pulse-glow-2" />
 
       {/* Subtle background brand watermark (dark silhouette for light background) */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none">
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none animate-float-slow">
         <img 
           src="https://www.psicologoalexsilveira.com.br/assets/imgs/logotipobranco.png" 
           alt="Watermark Logo" 
