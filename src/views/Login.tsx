@@ -147,7 +147,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               <h1 className="font-outfit font-black text-3xl md:text-4.5xl text-white leading-normal tracking-tight">
                 {/* First Line */}
                 <div className="flex flex-wrap gap-x-2.5 gap-y-1 mb-2">
-                  {["AQUELE", "QUE", "NÃO", "SABE", "AONDE", "VAI,"].map((word, i) => (
+                  {["AQUELE", "QUE", "NÃO", "SABE", "ONDE", "VAI,"].map((word, i) => (
                     <span 
                       key={i} 
                       className="inline-block transition-all duration-300 hover:text-emerald-400 hover:scale-110 hover:-translate-y-0.5 cursor-default select-none hover:drop-shadow-[0_0_15px_rgba(52,211,153,0.6)] animate-fade-in-up"
