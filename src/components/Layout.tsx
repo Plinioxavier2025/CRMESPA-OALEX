@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Menu, 
-  Cloud, 
   CloudOff, 
   History,
   X,
@@ -84,33 +83,26 @@ export const Layout: React.FC<LayoutProps> = ({
 
 
           <div className="flex items-center gap-3">
-            {/* Supabase Status Indicator Badge */}
-            <div className="relative group">
-              {isCloud ? (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-sm">
-                  <Cloud className="w-4 h-4 text-emerald-600 animate-pulse" />
-                  <span className="hidden sm:inline">Supabase Conectado</span>
-                </div>
-              ) : (
+            {/* Supabase Status Indicator Badge - Only shown in local fallback mode */}
+            {!isCloud && (
+              <div className="relative group">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100 shadow-sm">
                   <CloudOff className="w-4 h-4 text-amber-600" />
                   <span className="hidden sm:inline">Banco Local Simulado</span>
                 </div>
-              )}
-              
-              {/* Status Info Tooltip */}
-              <div className="absolute right-0 top-full mt-2 w-72 p-3 bg-slate-900 text-white text-xs rounded-xl shadow-xl border border-slate-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="flex items-center gap-1.5 font-semibold text-slate-100 mb-1 border-b border-slate-800 pb-1.5">
-                  <Info className="w-3.5 h-3.5" />
-                  <span>Modo de Armazenamento</span>
+                
+                {/* Status Info Tooltip */}
+                <div className="absolute right-0 top-full mt-2 w-72 p-3 bg-slate-900 text-white text-xs rounded-xl shadow-xl border border-slate-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="flex items-center gap-1.5 font-semibold text-slate-100 mb-1 border-b border-slate-800 pb-1.5">
+                    <Info className="w-3.5 h-3.5" />
+                    <span>Modo de Armazenamento</span>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed font-light">
+                    Os dados estão salvos apenas no seu navegador (localStorage). Para conectar à nuvem, crie o arquivo .env com suas chaves.
+                  </p>
                 </div>
-                <p className="text-slate-300 leading-relaxed font-light">
-                  {isCloud 
-                    ? "O sistema está gravando diretamente no banco de dados na nuvem Supabase." 
-                    : "Os dados estão salvos apenas no seu navegador (localStorage). Para conectar à nuvem, crie o arquivo .env com suas chaves."}
-                </p>
               </div>
-            </div>
+            )}
 
             {/* Audit Logs Trigger */}
             <button
