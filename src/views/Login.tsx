@@ -139,13 +139,45 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             )}
           </div>
 
-          <div className="space-y-6 my-10 md:my-0 relative z-10">
-            <h1 className="font-outfit font-black text-3xl md:text-4.5xl text-white leading-[1.15] tracking-tight">
-              Gestão acolhedora, <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-300">clínica organizada.</span>
-            </h1>
-            <p className="text-slate-350 text-sm font-light leading-relaxed max-w-sm">
-              Acompanhe o fluxo de pacientes, meça a taxa de retenção da clínica, faça análises mensais e emita relatórios com praticidade e segurança.
+          <div className="space-y-6 my-10 md:my-0 relative z-10 group">
+            <div>
+              <span className="inline-block opacity-60 text-slate-350 text-[10px] uppercase tracking-[0.25em] font-bold mb-3 select-none">
+                Filosofia de Sucesso
+              </span>
+              <h1 className="font-outfit font-black text-3xl md:text-4.5xl text-white leading-normal tracking-tight">
+                {/* First Line */}
+                <div className="flex flex-wrap gap-x-2.5 gap-y-1 mb-2">
+                  {["AQUELE", "QUE", "NÃO", "SABE", "AONDE", "VAI,"].map((word, i) => (
+                    <span 
+                      key={i} 
+                      className="inline-block transition-all duration-300 hover:text-emerald-400 hover:scale-110 hover:-translate-y-0.5 cursor-default select-none hover:drop-shadow-[0_0_15px_rgba(52,211,153,0.6)] animate-fade-in-up"
+                      style={{ animationDelay: `${i * 100}ms` }}
+                    >
+                      {word}
+                    </span>
+                  ))}
+                </div>
+                {/* Second Line */}
+                <div className="flex flex-wrap gap-x-2.5 gap-y-1">
+                  {["QUALQUER", "CAMINHO", "SERVE."].map((word, i) => (
+                    <span 
+                      key={i} 
+                      className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-300 transition-all duration-300 hover:scale-115 hover:-translate-y-1 cursor-default select-none hover:drop-shadow-[0_0_20px_rgba(103,232,249,0.8)] animate-fade-in-shimmer"
+                      style={{ 
+                        animationDelay: `${(i + 6) * 100}ms`,
+                        textShadow: '0 0 40px rgba(52,211,153,0.05)'
+                      }}
+                    >
+                      {word}
+                    </span>
+                  ))}
+                </div>
+              </h1>
+              <div className="h-[2px] w-12 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full mt-6 transition-all duration-500 group-hover:w-24" />
+            </div>
+            
+            <p className="text-slate-350 text-xs font-light leading-relaxed max-w-sm tracking-wide animate-fade-in-up" style={{ animationDelay: '1000ms' }}>
+              Tenha clareza estratégica. Defina metas precisas para a sua clínica e acompanhe cada indicador de sucesso em um único painel de controle.
             </p>
           </div>
         </div>
