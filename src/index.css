@@ -108,7 +108,8 @@
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(226, 232, 240, 0.8) !important;
-  border-top: 3px solid rgba(16, 185, 129, 0.5) !important; /* Elegant brand emerald top line */
+  border-top: 3px solid rgba(16, 185, 129, 0.5) !important;
+  /* Elegant brand emerald top line */
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 8px -1px rgba(5, 150, 105, 0.01) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
@@ -125,11 +126,13 @@
 /* Modals & Overlays - Rich, readable solid glassmorphism to block background text */
 div.fixed form.bg-white,
 form.bg-white {
-  background-color: rgba(255, 255, 255, 0.98) !important; /* Near-opaque to stop bleed-through */
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  /* Near-opaque to stop bleed-through */
   backdrop-filter: blur(30px) !important;
   -webkit-backdrop-filter: blur(30px) !important;
   border: 1px solid rgba(226, 232, 240, 1) !important;
-  border-top: 4px solid #10b981 !important; /* Solid thick brand emerald top accent */
+  border-top: 4px solid #10b981 !important;
+  /* Solid thick brand emerald top accent */
   box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 30px rgba(16, 185, 129, 0.1) !important;
 }
 
@@ -167,7 +170,8 @@ table tbody tr:hover {
   color: #2563eb !important;
 }
 
-.bg-brand-green-light, .bg-emerald-50 {
+.bg-brand-green-light,
+.bg-emerald-50 {
   background-color: rgba(16, 185, 129, 0.12) !important;
   color: #059669 !important;
 }
@@ -212,7 +216,7 @@ table tbody tr:hover {
 .bg-slate-950 {
   background-color: #f8fafc !important;
   background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
-                    radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.06) 0px, transparent 50%) !important;
+    radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.06) 0px, transparent 50%) !important;
 }
 
 /* Sidebar Dark Indigo styling for premium layout contrast */
@@ -280,9 +284,11 @@ header.sticky {
   0% {
     transform: translateY(0px) rotate(0deg) scale(1);
   }
+
   50% {
     transform: translateY(-15px) rotate(2deg) scale(1.02);
   }
+
   100% {
     transform: translateY(0px) rotate(0deg) scale(1);
   }
@@ -293,10 +299,12 @@ header.sticky {
     opacity: 0.06;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.12;
     transform: scale(1.08);
   }
+
   100% {
     opacity: 0.06;
     transform: scale(1);
