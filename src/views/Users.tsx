@@ -89,9 +89,15 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
           const resData = await res.json();
 
           if (!res.ok) {
-            const errorMsg = resData.message || resData.error_description || '';
-            if (errorMsg.includes('signup') || resData.code === 403 || errorMsg.includes('disabled')) {
-              throw new Error('O cadastro de novos usuários está desativado no painel da Supabase. Por favor, reative a opção "Allow new users to sign up" para prosseguir.');
+            const errorMsg = resData.msg || resData.message || resData.error_description || resData.error || '';
+            const isSignupDisabled = 
+              errorMsg.toLowerCase().includes('signup') || 
+              errorMsg.toLowerCase().includes('disabled') || 
+              resData.error_code === 'signup_disabled' || 
+              resData.code === 403;
+
+            if (isSignupDisabled) {
+              throw new Error('O cadastro de novos usuários está desativado no painel da Supabase. Por favor, acesse o painel e reative a opção "Allow new users to sign up" no menu Sign In/Providers da Supabase.');
             }
             throw new Error(errorMsg || 'Falha ao cadastrar usuário.');
           }
