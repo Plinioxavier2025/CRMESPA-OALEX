@@ -22,12 +22,16 @@ interface PatientsListProps {
   activeUserName: string;
   triggerFormOpen?: boolean;
   onFormClosed?: () => void;
+  initialFilters?: { status?: string; month?: string; year?: string; excludePlanilha?: boolean } | null;
+  clearInitialFilters?: () => void;
 }
 
 export const PatientsList: React.FC<PatientsListProps> = ({ 
   activeUserName,
   triggerFormOpen = false,
-  onFormClosed
+  onFormClosed,
+  initialFilters = null,
+  clearInitialFilters
 }) => {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +45,7 @@ export const PatientsList: React.FC<PatientsListProps> = ({
   const [filterReason, setFilterReason] = useState('');
   const [filterStartDate, setFilterStartDate] = useState('');
   const [filterEndDate, setFilterEndDate] = useState('');
+  const [excludePlanilha, setExcludePlanilha] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
   // Sorting state
@@ -74,6 +79,23 @@ export const PatientsList: React.FC<PatientsListProps> = ({
   useEffect(() => {
     loadPatients();
   }, []);
+
+  useEffect(() => {
+    if (initialFilters) {
+      setFilterStatus(initialFilters.status || '');
+      setFilterMonth(initialFilters.month || '');
+      setFilterYear(initialFilters.year || '');
+      setExcludePlanilha(initialFilters.excludePlanilha || false);
+      
+      if (initialFilters.status || initialFilters.month || initialFilters.year || initialFilters.excludePlanilha) {
+        setShowFilters(true);
+      }
+      
+      if (clearInitialFilters) {
+        clearInitialFilters();
+      }
+    }
+  }, [initialFilters, clearInitialFilters]);
 
   // Listen to triggering creation form from sidebar shortcut
   useEffect(() => {
@@ -122,6 +144,7 @@ export const PatientsList: React.FC<PatientsListProps> = ({
     setFilterReason('');
     setFilterStartDate('');
     setFilterEndDate('');
+    setExcludePlanilha(false);
   };
 
   // ----------------------------------------------------
@@ -141,10 +164,20 @@ export const PatientsList: React.FC<PatientsListProps> = ({
     // 3. Convênio Filter
     const matchConvenio = !filterConvenio || p.convenio === filterConvenio;
 
-    // 4. Registration Month / Year
-    const [regYear, regMonth] = p.data_cadastro.split('-'); // YYYY-MM-DD
-    const matchMonth = !filterMonth || regMonth === filterMonth;
-    const matchYear = !filterYear || regYear === filterYear;
+    // 4. Registration or Dropout Month / Year
+    let patientYear = '';
+    let patientMonth = '';
+    if (p.status === 'Desistiu') {
+      const [upYear, upMonth] = p.data_ultima_atualizacao.split('-');
+      patientYear = upYear;
+      patientMonth = upMonth;
+    } else {
+      const [regYear, regMonth] = p.data_cadastro.split('-');
+      patientYear = regYear;
+      patientMonth = regMonth;
+    }
+    const matchMonth = !filterMonth || patientMonth === filterMonth;
+    const matchYear = !filterYear || patientYear === filterYear;
 
     // 5. Dropout Reason Filter
     let matchReason = true;
@@ -161,7 +194,10 @@ export const PatientsList: React.FC<PatientsListProps> = ({
     const matchPeriod = (!filterStartDate || p.data_cadastro >= filterStartDate) &&
                         (!filterEndDate || p.data_cadastro <= filterEndDate);
 
-    return matchSearch && matchStatus && matchConvenio && matchMonth && matchYear && matchReason && matchPeriod;
+    // 7. Exclude sheet imports
+    const matchExcludePlanilha = !excludePlanilha || !p.usuario_cadastro?.includes('Planilha');
+
+    return matchSearch && matchStatus && matchConvenio && matchMonth && matchYear && matchReason && matchPeriod && matchExcludePlanilha;
   });
 
   // ----------------------------------------------------
@@ -376,6 +412,20 @@ export const PatientsList: React.FC<PatientsListProps> = ({
                 <option value="Falta de tempo">Falta de tempo</option>
                 <option value="Outro">Outro</option>
               </select>
+            </div>
+            
+            {/* Ocultar Importados (Planilha) */}
+            <div className="flex items-center gap-2 pt-5 select-none">
+              <input
+                id="filter-exclude-planilha"
+                type="checkbox"
+                checked={excludePlanilha}
+                onChange={(e) => setExcludePlanilha(e.target.checked)}
+                className="w-4 h-4 rounded border-slate-300 text-brand-blue-primary focus:ring-brand-blue-primary cursor-pointer font-semibold"
+              />
+              <label htmlFor="filter-exclude-planilha" className="font-semibold text-slate-500 cursor-pointer">
+                Excluir Planilhas
+              </label>
             </div>
 
             {/* Reset Filters button */}

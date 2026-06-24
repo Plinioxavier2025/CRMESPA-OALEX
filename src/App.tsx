@@ -16,6 +16,12 @@ import type { Usuario } from './services/db';
 function App() {
   const [user, setUser] = useState<Omit<Usuario, 'senha'> | null>(null);
   const [currentTab, setCurrentTab] = useState('dashboard');
+  const [patientFilters, setPatientFilters] = useState<{ status?: string; month?: string; year?: string; excludePlanilha?: boolean } | null>(null);
+
+  const navigateToPatients = (status?: string, month?: string, year?: string, excludePlanilha?: boolean) => {
+    setPatientFilters({ status, month, year, excludePlanilha });
+    setCurrentTab('pacientes');
+  };
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     return typeof window !== 'undefined' ? window.innerWidth < 768 : false;
   });
@@ -99,16 +105,25 @@ function App() {
       {/* Sub-views routing logic */}
       <div className="w-full">
         {currentTab === 'dashboard' && (
-          <Dashboard setCurrentTab={setCurrentTab} />
+          <Dashboard 
+            setCurrentTab={setCurrentTab} 
+            navigateToPatients={navigateToPatients}
+          />
         )}
         {currentTab === 'pacientes' && (
-          <PatientsList activeUserName={user.nome} />
+          <PatientsList 
+            activeUserName={user.nome} 
+            initialFilters={patientFilters}
+            clearInitialFilters={() => setPatientFilters(null)}
+          />
         )}
         {currentTab === 'novo-paciente' && (
           <PatientsList 
             activeUserName={user.nome} 
             triggerFormOpen={true} 
             onFormClosed={() => setCurrentTab('pacientes')} 
+            initialFilters={patientFilters}
+            clearInitialFilters={() => setPatientFilters(null)}
           />
         )}
         {currentTab === 'importacao' && (

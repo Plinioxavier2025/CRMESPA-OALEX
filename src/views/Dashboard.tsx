@@ -29,7 +29,10 @@ import {
   CartesianGrid 
 } from 'recharts';
 
-export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ setCurrentTab }) => {
+export const Dashboard: React.FC<{ 
+  setCurrentTab: (tab: string) => void;
+  navigateToPatients?: (status?: string, month?: string, year?: string, excludePlanilha?: boolean) => void;
+}> = ({ setCurrentTab, navigateToPatients }) => {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -339,7 +342,10 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
         
         {/* Total Pacientes */}
         <div 
-          onClick={() => setCurrentTab('pacientes')}
+          onClick={() => {
+            if (navigateToPatients) navigateToPatients();
+            else setCurrentTab('pacientes');
+          }}
           className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-brand-blue-primary/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
         >
           <div className="p-3.5 rounded-xl bg-brand-blue-light text-brand-blue-primary group-hover:scale-105 transition-transform">
@@ -354,7 +360,10 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
 
         {/* Pacientes Ativos */}
         <div 
-          onClick={() => setCurrentTab('pacientes')}
+          onClick={() => {
+            if (navigateToPatients) navigateToPatients('Ativo');
+            else setCurrentTab('pacientes');
+          }}
           className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-brand-green-primary/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
         >
           <div className="p-3.5 rounded-xl bg-emerald-50 text-brand-green-primary group-hover:scale-105 transition-transform">
@@ -369,7 +378,13 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
 
         {/* Novos Pacientes do Mês */}
         <div 
-          onClick={() => setCurrentTab('novos-mes')}
+          onClick={() => {
+            if (navigateToPatients) {
+              navigateToPatients(undefined, selectedMonth, selectedYear, true);
+            } else {
+              setCurrentTab('pacientes');
+            }
+          }}
           className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-blue-600/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
         >
           <div className="p-3.5 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform">
@@ -384,7 +399,13 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
 
         {/* Pacientes Desistentes do Mês */}
         <div 
-          onClick={() => setCurrentTab('novos-mes')}
+          onClick={() => {
+            if (navigateToPatients) {
+              navigateToPatients('Desistiu', selectedMonth, selectedYear);
+            } else {
+              setCurrentTab('pacientes');
+            }
+          }}
           className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-red-650/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
         >
           <div className="p-3.5 rounded-xl bg-red-50 text-red-600 group-hover:scale-105 transition-transform">
@@ -410,7 +431,7 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
             <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-purple-650 transition-colors">
               {growthRate >= 0 ? '+' : ''}{growthRate.toFixed(1)}%
             </strong>
-            <span className="text-[10px] text-slate-400 mt-1 block">Relação entradas x saídas</span>
+            <span className="text-[10px] text-slate-400 mt-1 block">Relação entries x saídas</span>
           </div>
         </div>
 
@@ -431,7 +452,13 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
 
         {/* Cadastrados no Mês */}
         <div 
-          onClick={() => setCurrentTab('novos-mes')}
+          onClick={() => {
+            if (navigateToPatients) {
+              navigateToPatients(undefined, selectedMonth, selectedYear, true);
+            } else {
+              setCurrentTab('pacientes');
+            }
+          }}
           className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-orange-650/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
         >
           <div className="p-3.5 rounded-xl bg-orange-50 text-orange-600 group-hover:scale-105 transition-transform">
@@ -446,7 +473,13 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
 
         {/* Cadastrados no Ano */}
         <div 
-          onClick={() => setCurrentTab('novos-mes')}
+          onClick={() => {
+            if (navigateToPatients) {
+              navigateToPatients(undefined, undefined, selectedYear, true);
+            } else {
+              setCurrentTab('pacientes');
+            }
+          }}
           className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-sky-650/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
         >
           <div className="p-3.5 rounded-xl bg-sky-50 text-sky-600 group-hover:scale-105 transition-transform">
