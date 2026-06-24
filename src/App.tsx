@@ -25,7 +25,9 @@ function App() {
     const savedSession = localStorage.getItem('crm_alex_session');
     if (savedSession) {
       try {
-        setUser(JSON.parse(savedSession));
+        const u = JSON.parse(savedSession);
+        setUser(u);
+        db.autoTransitionPatients().catch(console.error);
       } catch (e) {
         localStorage.removeItem('crm_alex_session');
       }
@@ -36,6 +38,7 @@ function App() {
   const handleLoginSuccess = (userData: Omit<Usuario, 'senha'>) => {
     setUser(userData);
     localStorage.setItem('crm_alex_session', JSON.stringify(userData));
+    db.autoTransitionPatients().catch(console.error);
   };
 
   const handleLogout = async () => {

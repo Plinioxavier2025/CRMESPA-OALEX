@@ -287,5 +287,59 @@ export const db = {
     }
     setLocal('configuracoes', configs);
     return true;
+  },
+
+  async autoTransitionPatients(): Promise<void> {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const currentPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+    const firstDayOfCurrentMonth = `${currentPrefix}-01`;
+    
+    const todayStr = today.toISOString().split('T')[0];
+    const timeStr = today.toTimeString().split(' ')[0];
+
+    const patients = await this.getPacientes();
+    const toTransition = patients.filter(p => 
+      p.status === 'Novo Cliente' && 
+      p.data_cadastro < firstDayOfCurrentMonth &&
+      !p.convenio.toLowerCase().includes('nutri') &&
+      !p.convenio.toLowerCase().includes('medi')
+    );
+
+    if (toTransition.length === 0) return;
+
+    for (const p of toTransition) {
+      const updatedFields = {
+        status: 'Ativo' as const,
+        data_cadastro: p.data_cadastro, // Mantém a data de cadastro original intacta
+        data_ultima_atualizacao: todayStr,
+        hora_ultima_atualizacao: timeStr
+      };
+
+      if (supabase) {
+        await supabase
+          .from('pacientes')
+          .update({
+            status: updatedFields.status,
+            data_ultima_atualizacao: updatedFields.data_ultima_atualizacao,
+            hora_ultima_atualizacao: updatedFields.hora_ultima_atualizacao
+          })
+          .eq('id', p.id);
+      } else {
+        const allPatients = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
+        const idx = allPatients.findIndex(x => x.id === p.id);
+        if (idx !== -1) {
+          allPatients[idx] = { ...allPatients[idx], ...updatedFields };
+          setLocal('pacientes', allPatients);
+        }
+      }
+
+      await this.addLog(
+        'Sistema', 
+        'Transição Automática', 
+        `Paciente ${p.nome} (Convênio: ${p.convenio}, Cadastrado em: ${p.data_cadastro}) foi movido automaticamente para "Ativo" devido à virada do mês.`
+      );
+    }
   }
 };
