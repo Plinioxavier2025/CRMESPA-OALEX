@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../services/db';
 import type { Usuario } from '../services/db';
 import { UserCog, User, Mail, ShieldAlert, Edit, Save, X, CheckCircle2, UserPlus } from 'lucide-react';
+import { supabaseUrl, supabaseAnonKey } from '../services/supabase';
 
 export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) => {
   const [users, setUsers] = useState<Usuario[]>([]);
@@ -68,8 +69,8 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
 
         if (isCloud) {
           // Cloud Supabase User Registration via raw fetch (to avoid session logout)
-          const signupUrl = `${import.meta.env.VITE_SUPABASE_URL}/auth/v1/signup`;
-          const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+          const signupUrl = `${supabaseUrl}/auth/v1/signup`;
+          const anonKey = supabaseAnonKey;
 
           const res = await fetch(signupUrl, {
             method: 'POST',
