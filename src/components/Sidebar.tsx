@@ -94,7 +94,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             return (
               <button
                 key={item.id}
-                onClick={() => setCurrentTab(item.id)}
+                onClick={() => {
+                  setCurrentTab(item.id);
+                  if (window.innerWidth < 768) {
+                    setCollapsed(true);
+                  }
+                }}
                 className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${
                   isActive 
                     ? 'bg-brand-green-primary text-white shadow-md shadow-emerald-950/20' 
