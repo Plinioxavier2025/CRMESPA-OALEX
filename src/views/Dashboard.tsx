@@ -338,61 +338,76 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Total Pacientes */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-brand-blue-light text-brand-blue-primary">
+        <div 
+          onClick={() => setCurrentTab('pacientes')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-brand-blue-primary/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-brand-blue-light text-brand-blue-primary group-hover:scale-105 transition-transform">
             <Users className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Total de Pacientes</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">{totalPatients}</strong>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-brand-blue-primary transition-colors">{totalPatients}</strong>
             <span className="text-[10px] text-slate-400 mt-1 block">Histórico acumulado na clínica</span>
           </div>
         </div>
 
         {/* Pacientes Ativos */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-emerald-50 text-brand-green-primary">
+        <div 
+          onClick={() => setCurrentTab('pacientes')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-brand-green-primary/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-emerald-50 text-brand-green-primary group-hover:scale-105 transition-transform">
             <UserCheck className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Pacientes Ativos</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">{activePatients}</strong>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-brand-green-primary transition-colors">{activePatients}</strong>
             <span className="text-[10px] text-slate-400 mt-1 block">Recebendo atendimento contínuo</span>
           </div>
         </div>
 
         {/* Novos Pacientes do Mês */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-blue-50 text-blue-600">
+        <div 
+          onClick={() => setCurrentTab('novos-mes')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-blue-600/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform">
             <UserPlus className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Novos do Mês</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">{novosMes}</strong>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-blue-600 transition-colors">{novosMes}</strong>
             <span className="text-[10px] text-emerald-600 mt-1 block font-medium">+{cadastradosMes} cadastrados este mês</span>
           </div>
         </div>
 
         {/* Pacientes Desistentes do Mês */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-red-50 text-red-600">
+        <div 
+          onClick={() => setCurrentTab('novos-mes')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-red-650/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-red-50 text-red-600 group-hover:scale-105 transition-transform">
             <UserMinus className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Desistentes do Mês</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">{desistentesMes}</strong>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-red-600 transition-colors">{desistentesMes}</strong>
             <span className="text-[10px] text-red-600 mt-1 block font-medium">-{desistentesMes} saídas este mês</span>
           </div>
         </div>
 
         {/* Crescimento Mensal */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-purple-50 text-purple-600">
+        <div 
+          onClick={() => setCurrentTab('analise')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-purple-600/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-purple-50 text-purple-600 group-hover:scale-105 transition-transform">
             <TrendingUp className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Crescimento Mensal</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-purple-650 transition-colors">
               {growthRate >= 0 ? '+' : ''}{growthRate.toFixed(1)}%
             </strong>
             <span className="text-[10px] text-slate-400 mt-1 block">Relação entradas x saídas</span>
@@ -400,37 +415,46 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
         </div>
 
         {/* Taxa de Retenção */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-emerald-50 text-emerald-600">
+        <div 
+          onClick={() => setCurrentTab('analise')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-emerald-600/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
             <Percent className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Taxa de Retenção</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">{retentionRate.toFixed(1)}%</strong>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-emerald-700 transition-colors">{retentionRate.toFixed(1)}%</strong>
             <span className="text-[10px] text-slate-400 mt-1 block">Proporção de pacientes ativos</span>
           </div>
         </div>
 
         {/* Cadastrados no Mês */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-orange-50 text-orange-600">
+        <div 
+          onClick={() => setCurrentTab('novos-mes')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-orange-650/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-orange-50 text-orange-600 group-hover:scale-105 transition-transform">
             <Layers className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Cadastros no Mês</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">{cadastradosMes}</strong>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-orange-650 transition-colors">{cadastradosMes}</strong>
             <span className="text-[10px] text-slate-400 mt-1 block">Faturamento e captação</span>
           </div>
         </div>
 
         {/* Cadastrados no Ano */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="p-3.5 rounded-xl bg-sky-50 text-sky-600">
+        <div 
+          onClick={() => setCurrentTab('novos-mes')}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-sky-650/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-sky-50 text-sky-600 group-hover:scale-105 transition-transform">
             <Activity className="w-6 h-6" />
           </div>
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Cadastros no Ano</span>
-            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5">{cadastradosAno}</strong>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-sky-700 transition-colors">{cadastradosAno}</strong>
             <span className="text-[10px] text-slate-400 mt-1 block">Acumulado anual (2026)</span>
           </div>
         </div>
