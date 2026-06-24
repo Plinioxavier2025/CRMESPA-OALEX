@@ -80,7 +80,7 @@ export const Reports: React.FC = () => {
     const targetPrefix = `2026-${m.num}`;
     const lastDayCutoff = `2026-${m.num}-31`;
 
-    const entries = patients.filter(p => p.data_cadastro.startsWith(targetPrefix)).length;
+    const entries = patients.filter(p => p.data_cadastro.startsWith(targetPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
     const exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(targetPrefix)).length;
     const netGrowth = entries - exits;
 

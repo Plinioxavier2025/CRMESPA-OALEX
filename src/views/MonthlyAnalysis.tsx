@@ -88,7 +88,7 @@ export const MonthlyAnalysis: React.FC = () => {
   const lastDayOfPrevMonthStr = `${previousYearVal}-${String(previousMonthVal).padStart(2, '0')}-31`;
 
   // 1. Novos Pacientes (registered in the selected month)
-  const novosMes = patients.filter(p => p.data_cadastro.startsWith(targetPrefix)).length;
+  const novosMes = patients.filter(p => p.data_cadastro.startsWith(targetPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
 
   // 2. Pacientes Desistentes (withdrew in the selected month)
   const desistentesMes = patients.filter(
@@ -145,7 +145,7 @@ export const MonthlyAnalysis: React.FC = () => {
     const prefixStr = `${yVal}-${mStr}`;
     const mName = monthsList.find(m => m.value === mStr)?.label.substring(0, 3) || mStr;
 
-    const entries = patients.filter(p => p.data_cadastro.startsWith(prefixStr)).length;
+    const entries = patients.filter(p => p.data_cadastro.startsWith(prefixStr) && !p.usuario_cadastro?.includes('Planilha')).length;
     const exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(prefixStr)).length;
 
     trendData.push({

@@ -145,12 +145,12 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
 
 
   const prefix = `${selectedYear}-${selectedMonth}`;
-  const novosMes = patients.filter(p => p.data_cadastro.startsWith(prefix)).length;
+  const novosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
   const desistentesMes = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(prefix)).length;
 
   // Clientes Cadastrados no Mês / Ano
-  const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix)).length;
-  const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(selectedYear)).length;
+  const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
+  const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(selectedYear) && !p.usuario_cadastro?.includes('Planilha')).length;
 
   // Math calculation for Growth comparing selected month to previous month
   const selectedMonthStart = `${selectedYear}-${selectedMonth}-01`;
@@ -194,7 +194,7 @@ export const Dashboard: React.FC<{ setCurrentTab: (tab: string) => void }> = ({ 
     const monthNum = String(index + 1).padStart(2, '0');
     const monthPrefix = `${selectedYear}-${monthNum}`;
 
-    const entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix)).length;
+    const entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
     const exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix)).length;
 
     return {

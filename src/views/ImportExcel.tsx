@@ -188,7 +188,7 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
           telefone: item.telefone,
           convenio: item.convenio,
           status: 'Novo Cliente',
-          usuario_cadastro: activeUserName
+          usuario_cadastro: activeUserName + ' (Planilha)'
         });
         importedCount++;
         details.push(`[INSERIDO] Linha ${item.rowNum}: ${item.nome} (${item.convenio})`);
@@ -203,7 +203,7 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
             telefone: item.telefone,
             convenio: item.convenio,
             status: item.existingStatus, // Keep existing status or reset to Ativo
-            usuario_cadastro: activeUserName
+            usuario_cadastro: activeUserName + ' (Planilha)'
           });
           updatedCount++;
           details.push(`[ATUALIZADO] Linha ${item.rowNum}: ${item.nome} (${item.convenio})`);
