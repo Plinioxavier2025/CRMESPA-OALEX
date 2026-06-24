@@ -15,7 +15,9 @@ import type { Usuario } from './services/db';
 function App() {
   const [user, setUser] = useState<Omit<Usuario, 'senha'> | null>(null);
   const [currentTab, setCurrentTab] = useState('dashboard');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  });
   const [checkingSession, setCheckingSession] = useState(true);
 
   // Check login session on mount

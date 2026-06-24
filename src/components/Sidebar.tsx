@@ -43,8 +43,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside 
-      className={`fixed top-0 left-0 z-30 h-screen bg-brand-blue-dark text-white border-r border-slate-800 transition-all duration-300 flex flex-col justify-between ${
-        collapsed ? 'w-20' : 'w-64'
+      className={`fixed top-0 z-30 h-screen bg-brand-blue-dark text-white border-r border-slate-800 transition-all duration-300 flex flex-col justify-between md:left-0 md:translate-x-0 ${
+        collapsed ? '-translate-x-full md:w-20' : 'left-0 translate-x-0 w-64 md:w-64'
       }`}
     >
       {/* Header section with brand */}

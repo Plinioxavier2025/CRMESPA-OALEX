@@ -63,6 +63,15 @@ export const Layout: React.FC<LayoutProps> = ({
       </div>
 
       {sidebar}
+
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {!collapsed && (
+        <div 
+          className="fixed inset-0 bg-slate-950/65 backdrop-blur-sm z-25 md:hidden cursor-pointer"
+          onClick={() => setCollapsed(true)}
+        />
+      )}
+
       {/* Top Navbar & Contents Container */}
 
 
