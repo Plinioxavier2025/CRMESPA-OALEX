@@ -10,7 +10,8 @@ import {
   UserCog, 
   LogOut, 
   ChevronLeft, 
-  ChevronRight
+  ChevronRight,
+  History
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -36,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'novo-paciente', name: 'Novo Paciente', icon: UserPlus },
     { id: 'importacao', name: 'Importação Excel', icon: Upload },
     { id: 'analise', name: 'Análise Mensal', icon: BarChart3 },
+    { id: 'novos-mes', name: 'Novos por Mês', icon: History },
     { id: 'relatorios', name: 'Relatórios', icon: FileText },
     { id: 'configuracoes', name: 'Configurações', icon: Settings },
     { id: 'usuarios', name: 'Usuários', icon: UserCog }

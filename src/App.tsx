@@ -6,6 +6,7 @@ import { Dashboard } from './views/Dashboard';
 import { PatientsList } from './views/PatientsList';
 import { ImportExcel } from './views/ImportExcel';
 import { MonthlyAnalysis } from './views/MonthlyAnalysis';
+import { NewPatientsHistory } from './views/NewPatientsHistory';
 import { Reports } from './views/Reports';
 import { Settings } from './views/Settings';
 import { Users } from './views/Users';
@@ -71,6 +72,7 @@ function App() {
       case 'novo-paciente': return 'Fichas de Pacientes';
       case 'importacao': return 'Importar Pacientes (Excel)';
       case 'analise': return 'Análise de Desempenho Mensal';
+      case 'novos-mes': return 'Histórico de Novos Clientes';
       case 'relatorios': return 'Exportação de Relatórios Gerenciais';
       case 'configuracoes': return 'Configurações de Prontuário';
       case 'usuarios': return 'Administradores do Sistema';
@@ -113,6 +115,7 @@ function App() {
           <ImportExcel activeUserName={user.nome} />
         )}
         {currentTab === 'analise' && <MonthlyAnalysis />}
+        {currentTab === 'novos-mes' && <NewPatientsHistory />}
         {currentTab === 'relatorios' && <Reports />}
         {currentTab === 'configuracoes' && (
           <Settings activeUserName={user.nome} />
