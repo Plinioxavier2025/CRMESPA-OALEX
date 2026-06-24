@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { db } from '../services/db';
 import type { Usuario } from '../services/db';
 import { supabase } from '../services/supabase';
-import { Mail, Lock, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ShieldAlert, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 interface LoginProps {
   onLoginSuccess: (user: Omit<Usuario, 'senha'>) => void;
@@ -13,6 +13,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const isCloud = db.isSupabaseMode();
   const [logoFailed, setLogoFailed] = useState(false);
 
@@ -230,13 +231,20 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                 </span>
                 <input
                   id="login-password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-white/10 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 text-sm outline-none transition-all placeholder:text-slate-500 bg-white/5 focus:bg-white/10 text-white"
+                  className="w-full pl-11 pr-12 py-3.5 rounded-2xl border border-white/10 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 text-sm outline-none transition-all placeholder:text-slate-500 bg-white/5 focus:bg-white/10 text-white"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
