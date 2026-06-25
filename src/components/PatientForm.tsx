@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/db';
 import type { Paciente } from '../services/db';
 import { Save, X, Phone, User, Landmark, ShieldQuestion } from 'lucide-react';
@@ -25,6 +25,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
   const [conveniosList, setConveniosList] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const isSubmitting = useRef(false);
 
   // Default dropout reasons
   const motivosList = [
@@ -96,16 +97,20 @@ export const PatientForm: React.FC<PatientFormProps> = ({
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting.current) return;
+    isSubmitting.current = true;
     setError('');
 
     if (!nome.trim()) {
       setError('O nome completo é obrigatório.');
+      isSubmitting.current = false;
       return;
     }
     
     const cleanPhone = telefone.replace(/\D/g, '');
     if (cleanPhone.length < 10) {
       setError('O número de telefone deve possuir DDD e pelo menos 8 dígitos.');
+      isSubmitting.current = false;
       return;
     }
 
@@ -123,6 +128,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         if (!motivoFinal) {
           setError('Selecione ou preencha o motivo da desistência.');
           setSaving(false);
+          isSubmitting.current = false;
           return;
         }
       }
@@ -151,6 +157,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
       setError(e.message || 'Erro ao salvar os dados do paciente.');
     } finally {
       setSaving(false);
+      isSubmitting.current = false;
     }
   };
 

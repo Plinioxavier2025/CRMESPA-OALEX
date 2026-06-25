@@ -179,21 +179,55 @@ export const db = {
 
   // PATIENTS
   async getPacientes(): Promise<Paciente[]> {
+    let data: Paciente[] = [];
     if (supabase) {
-      const { data, error } = await supabase.from('pacientes').select('*').order('nome', { ascending: true });
+      const { data: sbData, error } = await supabase.from('pacientes').select('*').order('nome', { ascending: true });
       if (error) {
         console.error("Erro ao buscar pacientes no Supabase:", error);
         throw error;
       }
-      return data || [];
+      data = sbData || [];
+    } else {
+      data = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
     }
-    return getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
+
+    // Deduplicar em tempo de execução
+    const seen = new Set<string>();
+    const deduplicated: Paciente[] = [];
+    let modified = false;
+
+    for (const p of data) {
+      const nameNorm = (p.nome || '').toLowerCase().trim();
+      const phoneNorm = (p.telefone || '').replace(/\D/g, '');
+      const key = `${nameNorm}_${phoneNorm}`;
+
+      if (seen.has(key)) {
+        modified = true;
+        if (supabase) {
+          await supabase.from('pacientes').delete().eq('id', p.id);
+        }
+      } else {
+        seen.add(key);
+        deduplicated.push(p);
+      }
+    }
+
+    if (modified) {
+      if (!supabase) {
+        localStorage.setItem('crm_alex_pacientes', JSON.stringify(deduplicated));
+      }
+      return deduplicated;
+    }
+
+    return data;
   },
 
   async savePaciente(paciente: Omit<Paciente, 'id' | 'data_cadastro' | 'hora_cadastro' | 'data_ultima_atualizacao' | 'hora_ultima_atualizacao'> & { 
     id?: string;
     data_cadastro?: string;
     hora_cadastro?: string;
+    data_ultima_atualizacao?: string;
+    hora_ultima_atualizacao?: string;
   }): Promise<Paciente> {
     const todayStr = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
     const timeStr = new Date().toTimeString().split(' ')[0]; // HH:MM:SS
@@ -203,8 +237,8 @@ export const db = {
         // Update
         const updateObj = {
           ...paciente,
-          data_ultima_atualizacao: todayStr,
-          hora_ultima_atualizacao: timeStr
+          data_ultima_atualizacao: paciente.data_ultima_atualizacao || todayStr,
+          hora_ultima_atualizacao: paciente.hora_ultima_atualizacao || timeStr
         };
         const { data } = await supabase.from('pacientes').update(updateObj).eq('id', paciente.id).select().single();
         return data;
@@ -212,10 +246,10 @@ export const db = {
         // Insert
         const insertObj = {
           ...paciente,
-          data_cadastro: todayStr,
-          hora_cadastro: timeStr,
-          data_ultima_atualizacao: todayStr,
-          hora_ultima_atualizacao: timeStr
+          data_cadastro: paciente.data_cadastro || todayStr,
+          hora_cadastro: paciente.hora_cadastro || timeStr,
+          data_ultima_atualizacao: paciente.data_ultima_atualizacao || todayStr,
+          hora_ultima_atualizacao: paciente.hora_ultima_atualizacao || timeStr
         };
         const { data } = await supabase.from('pacientes').insert([insertObj]).select().single();
         return data;
@@ -307,29 +341,52 @@ export const db = {
     try {
       const allPatients = await this.getPacientes();
       let modified = false;
-      const desistentesNomes = [
-        'Beatriz Vasconcelos',
-        'Renata Lins Albuquerque',
-        'Gustavo Henrique Costa',
-        'Letícia Spiller Lima',
-        'Tony Ramos Fernandes',
-        'Glória Pires de Souza'
+      
+      const desistentesOriginais = [
+        { nome: 'Beatriz Vasconcelos', telefone: '(11) 95432-1098', convenio: 'Care Plus', status: 'Desistiu' as const, motivo_desistencia: 'Questão financeira', data_cadastro: '2026-01-22', hora_cadastro: '16:45:00', data_ultima_atualizacao: '2026-03-15', hora_ultima_atualizacao: '14:20:00', usuario_cadastro: 'Alex Silveira' },
+        { nome: 'Renata Lins Albuquerque', telefone: '(11) 92345-6789', convenio: 'Vivest', status: 'Desistiu' as const, motivo_desistencia: 'Mudança de cidade', data_cadastro: '2026-02-18', hora_cadastro: '08:15:00', data_ultima_atualizacao: '2026-04-10', hora_ultima_atualizacao: '10:00:00', usuario_cadastro: 'Administrador Espaço' },
+        { nome: 'Gustavo Henrique Costa', telefone: '(11) 94567-8901', convenio: 'Vivest', status: 'Desistiu' as const, motivo_desistencia: 'Alta terapêutica', data_cadastro: '2026-03-25', hora_cadastro: '14:15:00', data_ultima_atualizacao: '2026-06-01', hora_ultima_atualizacao: '16:30:00', usuario_cadastro: 'Administrador Espaço' },
+        { nome: 'Letícia Spiller Lima', telefone: '(11) 97890-1234', convenio: 'Particular', status: 'Desistiu' as const, motivo_desistencia: 'Falta de tempo', data_cadastro: '2026-04-20', hora_cadastro: '11:15:00', data_ultima_atualizacao: '2026-05-18', hora_ultima_atualizacao: '11:15:00', usuario_cadastro: 'Administrador Espaço' },
+        { nome: 'Tony Ramos Fernandes', telefone: '(11) 90123-4567', convenio: 'SulAmérica', status: 'Desistiu' as const, motivo_desistencia: 'Insatisfação', data_cadastro: '2026-05-22', hora_cadastro: '15:15:00', data_ultima_atualizacao: '2026-06-02', hora_ultima_atualizacao: '15:15:00', usuario_cadastro: 'Administrador Espaço' },
+        { nome: 'Glória Pires de Souza', telefone: '(11) 93456-0987', convenio: 'Particular', status: 'Desistiu' as const, motivo_desistencia: 'Outro: Indicada a outro especialista em TDAH de crianças', data_cadastro: '2026-06-11', hora_cadastro: '14:00:00', data_ultima_atualizacao: '2026-06-19', hora_ultima_atualizacao: '16:45:00', usuario_cadastro: 'Administrador Espaço' }
       ];
 
-      const toSave = allPatients.filter((p, index, self) => {
-        const nameNorm = p.nome.toLowerCase().trim();
+      const desistentesNomes = desistentesOriginais.map(d => d.nome);
 
-        // 1. Se o paciente veio de planilha e está como Novo Cliente, muda para Ativo
-        if (p.usuario_cadastro.includes('Planilha') && p.status === 'Novo Cliente') {
+      // 1. Deduplicar pacientes (mesmo nome e telefone)
+      const seen = new Set<string>();
+      const deduplicated: Paciente[] = [];
+      for (const p of allPatients) {
+        const nameNorm = p.nome.toLowerCase().trim();
+        const phoneNorm = p.telefone.replace(/\D/g, '');
+        const key = `${nameNorm}_${phoneNorm}`;
+        if (seen.has(key)) {
+          modified = true;
+          if (supabase) {
+            await supabase.from('pacientes').delete().eq('id', p.id);
+          }
+        } else {
+          seen.add(key);
+          deduplicated.push(p);
+        }
+      }
+
+      // 2. Corrigir status e remover duplicados da planilha
+      let toSave = deduplicated.filter((p, index, self) => {
+        const nameNorm = p.nome.toLowerCase().trim();
+        const userCad = p.usuario_cadastro || '';
+
+        // Se veio de planilha e está como Novo Cliente, muda para Ativo
+        if (userCad.includes('Planilha') && p.status === 'Novo Cliente') {
           p.status = 'Ativo';
           modified = true;
         }
 
-        // 2. Reverter desistentes originais que foram alterados ou duplicados
+        // Reverter desistentes originais que foram alterados ou duplicados
         if (desistentesNomes.some(n => n.toLowerCase() === nameNorm)) {
-          if (p.usuario_cadastro.includes('Planilha')) {
+          if (userCad.includes('Planilha')) {
             // Se for duplicata da planilha, e o original existir, remove a duplicata
-            const hasOriginal = self.some((x, idx) => idx !== index && x.nome.toLowerCase().trim() === nameNorm && !x.usuario_cadastro.includes('Planilha'));
+            const hasOriginal = self.some((x, idx) => idx !== index && x.nome.toLowerCase().trim() === nameNorm && !(x.usuario_cadastro || '').includes('Planilha'));
             if (hasOriginal) {
               modified = true;
               return false; // Remove duplicata da planilha
@@ -350,6 +407,26 @@ export const db = {
         }
         return true;
       });
+
+      // 3. Restaurar desistentes originais se estiverem faltando
+      for (const d of desistentesOriginais) {
+        const hasIt = toSave.some(p => p.nome.toLowerCase().trim() === d.nome.toLowerCase().trim());
+        if (!hasIt) {
+          modified = true;
+          if (supabase) {
+            const { data } = await supabase.from('pacientes').insert([d]).select().single();
+            if (data) {
+              toSave.push(data);
+            }
+          } else {
+            const newP = {
+              ...d,
+              id: 'p_' + Math.random().toString(36).substring(2, 11)
+            } as Paciente;
+            toSave.push(newP);
+          }
+        }
+      }
 
       if (modified) {
         if (supabase) {

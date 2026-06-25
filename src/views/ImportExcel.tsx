@@ -197,7 +197,10 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
           }
 
           // Fallback to "Particular" if no convenio is present
-          const finalConvenio = convVal.trim() || 'Particular';
+          let finalConvenio = convVal.trim() || 'Particular';
+          if (finalConvenio.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 'convenio') {
+            finalConvenio = 'SulAmérica';
+          }
 
           const entry = {
             nome: nomeVal.trim(),
