@@ -195,7 +195,7 @@ export const MonthlyAnalysis: React.FC = () => {
   }
 
   // ----------------------------------------------------
-  // CHART 3: DYNAMIC ACTIVE EVOLUTION LINE
+  // CHART 3: DYNAMIC ACTIVE EVOLUTION LINE (Ativos vs Inativos vs Desistentes)
   // ----------------------------------------------------
   const evolutionData = [];
   for (let i = 5; i >= 0; i--) {
@@ -209,15 +209,30 @@ export const MonthlyAnalysis: React.FC = () => {
     const cutoffDate = `${yVal}-${mStr}-31`;
     const mName = monthsList.find(m => m.value === mStr)?.label.substring(0, 3) || mStr;
 
-    const count = patients.filter(p => {
+    const activeCount = patients.filter(p => {
       const registered = p.data_cadastro <= cutoffDate;
-      const isDesistente = p.status === 'Desistiu' && p.data_ultima_atualizacao <= cutoffDate;
-      return registered && !isDesistente;
+      const isDesistenteAtCutoff = p.status === 'Desistiu' && p.data_ultima_atualizacao <= cutoffDate;
+      const isInativoAtCutoff = p.status === 'Inativo' && p.data_ultima_atualizacao <= cutoffDate;
+      return registered && !isDesistenteAtCutoff && !isInativoAtCutoff;
+    }).length;
+
+    const desistenteCount = patients.filter(p => {
+      const registered = p.data_cadastro <= cutoffDate;
+      const isDesistenteAtCutoff = p.status === 'Desistiu' && p.data_ultima_atualizacao <= cutoffDate;
+      return registered && isDesistenteAtCutoff;
+    }).length;
+
+    const inativoCount = patients.filter(p => {
+      const registered = p.data_cadastro <= cutoffDate;
+      const isInativoAtCutoff = p.status === 'Inativo' && p.data_ultima_atualizacao <= cutoffDate;
+      return registered && isInativoAtCutoff;
     }).length;
 
     evolutionData.push({
       name: `${mName}/${String(yVal).substring(2)}`,
-      'Pacientes Ativos': count
+      'Pacientes Ativos': activeCount,
+      'Desistências': desistenteCount,
+      'Pacientes Inativos': inativoCount
     });
   }
 
@@ -469,11 +484,11 @@ export const MonthlyAnalysis: React.FC = () => {
       {/* Second Row Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Active patients curve */}
+        {/* Comparative patients curve */}
         <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2 flex flex-col space-y-4">
           <div>
-            <h3 className="font-bold text-base text-brand-blue-dark font-outfit">Evolução de Ativos (Semestral)</h3>
-            <p className="text-xs text-slate-400 font-light mt-0.5">Trajetória do número de pacientes sob terapia ativa.</p>
+            <h3 className="font-bold text-base text-brand-blue-dark font-outfit">Comparativo de Evolução Semestral</h3>
+            <p className="text-xs text-slate-400 font-light mt-0.5">Trajetória e comparação de pacientes ativos, inativos e desistências.</p>
           </div>
           <div className="h-[240px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -482,6 +497,7 @@ export const MonthlyAnalysis: React.FC = () => {
                 <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
                 <Tooltip cursor={{ stroke: 'rgba(255, 255, 255, 0.1)', strokeWidth: 1 }} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
                 <Line 
                   type="monotone" 
                   dataKey="Pacientes Ativos" 
@@ -489,6 +505,22 @@ export const MonthlyAnalysis: React.FC = () => {
                   strokeWidth={3} 
                   activeDot={{ r: 6 }} 
                   dot={{ r: 4, strokeWidth: 2, fill: '#FFFFFF' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="Pacientes Inativos" 
+                  stroke="#F59E0B" 
+                  strokeWidth={2.5} 
+                  activeDot={{ r: 5 }} 
+                  dot={{ r: 3, strokeWidth: 1.5, fill: '#FFFFFF' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="Desistências" 
+                  stroke="#EF4444" 
+                  strokeWidth={2.5} 
+                  activeDot={{ r: 5 }} 
+                  dot={{ r: 3, strokeWidth: 1.5, fill: '#FFFFFF' }}
                 />
               </LineChart>
             </ResponsiveContainer>

@@ -254,22 +254,36 @@ export const Dashboard: React.FC<{
   }).slice(0, selectedMonthNum); // Dynamic slice up to the selected month
 
   // ----------------------------------------------------
-  // CHART DATA: HISTORICAL EVOLUTION LINE
+  // CHART DATA: HISTORICAL EVOLUTION LINE (Ativos vs Inativos vs Desistentes)
   // ----------------------------------------------------
   const lineChartData = monthsNames.map((name, index) => {
     const monthNum = String(index + 1).padStart(2, '0');
     const lastDayStr = `${selectedYear}-${monthNum}-31`; // generic cutoff
     
-    // Count active patients at that point in time
-    const activeAtMonth = patients.filter(p => {
-      const registeredByMonth = p.data_cadastro <= lastDayStr;
-      const isDesistenteByMonth = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayStr;
-      return registeredByMonth && !isDesistenteByMonth;
+    const activeCount = patients.filter(p => {
+      const registered = p.data_cadastro <= lastDayStr;
+      const isDesistenteAtCutoff = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayStr;
+      const isInativoAtCutoff = p.status === 'Inativo' && p.data_ultima_atualizacao <= lastDayStr;
+      return registered && !isDesistenteAtCutoff && !isInativoAtCutoff;
+    }).length;
+
+    const desistenteCount = patients.filter(p => {
+      const registered = p.data_cadastro <= lastDayStr;
+      const isDesistenteAtCutoff = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayStr;
+      return registered && isDesistenteAtCutoff;
+    }).length;
+
+    const inativoCount = patients.filter(p => {
+      const registered = p.data_cadastro <= lastDayStr;
+      const isInativoAtCutoff = p.status === 'Inativo' && p.data_ultima_atualizacao <= lastDayStr;
+      return registered && isInativoAtCutoff;
     }).length;
 
     return {
       name,
-      'Pacientes Ativos': activeAtMonth
+      'Pacientes Ativos': activeCount,
+      'Desistências': desistenteCount,
+      'Pacientes Inativos': inativoCount
     };
   }).slice(0, selectedMonthNum); // Dynamic slice up to the selected month
 
@@ -647,14 +661,14 @@ export const Dashboard: React.FC<{
       {/* Lower Row Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         
-        {/* Line Chart: Active patient progression */}
+        {/* Line Chart: Comparative patient progression */}
         <div 
           onClick={() => setCurrentTab('analise')}
           className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2 flex flex-col space-y-4 cursor-pointer hover:border-brand-blue-primary/30 hover:shadow-md transition-all group"
         >
           <div>
-            <h3 className="font-bold text-base text-brand-blue-dark font-outfit group-hover:text-brand-blue-primary transition-colors">Evolução de Pacientes Ativos</h3>
-            <p className="text-xs text-slate-400 font-light mt-0.5">Curva acumulada de pacientes ativos na clínica ao longo dos meses.</p>
+            <h3 className="font-bold text-base text-brand-blue-dark font-outfit group-hover:text-brand-blue-primary transition-colors">Comparativo de Evolução Semestral</h3>
+            <p className="text-xs text-slate-400 font-light mt-0.5">Trajetória e comparação de pacientes ativos, inativos e desistências.</p>
           </div>
           <div className="h-[260px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -663,6 +677,7 @@ export const Dashboard: React.FC<{
                 <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
                 <Tooltip cursor={{ stroke: 'rgba(255, 255, 255, 0.1)', strokeWidth: 1 }} contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '12px', color: '#f8fafc', fontSize: '12px' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
                 <Line 
                   type="monotone" 
                   dataKey="Pacientes Ativos" 
@@ -670,6 +685,22 @@ export const Dashboard: React.FC<{
                   strokeWidth={3} 
                   activeDot={{ r: 6 }} 
                   dot={{ r: 4, strokeWidth: 2, fill: '#FFFFFF' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="Pacientes Inativos" 
+                  stroke="#F59E0B" 
+                  strokeWidth={2.5} 
+                  activeDot={{ r: 5 }} 
+                  dot={{ r: 3, strokeWidth: 1.5, fill: '#FFFFFF' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="Desistências" 
+                  stroke="#EF4444" 
+                  strokeWidth={2.5} 
+                  activeDot={{ r: 5 }} 
+                  dot={{ r: 3, strokeWidth: 1.5, fill: '#FFFFFF' }}
                 />
               </LineChart>
             </ResponsiveContainer>
