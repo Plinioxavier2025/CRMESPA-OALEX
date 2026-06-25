@@ -156,8 +156,12 @@ export const PatientsList: React.FC<PatientsListProps> = ({
   const filteredPatients = patients.filter((p) => {
     // 1. Text Search matching Nome, Telefone or Convênio
     const term = search.toLowerCase();
+    const cleanTerm = search.replace(/\D/g, '');
+    const cleanPhone = p.telefone.replace(/\D/g, '');
+    
     const matchSearch = !term || 
       p.nome.toLowerCase().includes(term) ||
+      (cleanTerm && cleanPhone.includes(cleanTerm)) ||
       p.telefone.includes(term) ||
       p.convenio.toLowerCase().includes(term);
 
