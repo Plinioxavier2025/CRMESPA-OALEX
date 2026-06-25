@@ -312,6 +312,7 @@ export const PatientsList: React.FC<PatientsListProps> = ({
                 <option value="Novo Cliente">Novo Cliente</option>
                 <option value="Ativo">Ativo</option>
                 <option value="Desistiu">Desistiu</option>
+                <option value="Inativo">Inativo</option>
               </select>
             </div>
 
@@ -493,6 +494,8 @@ export const PatientsList: React.FC<PatientsListProps> = ({
                     statusBadge = 'bg-emerald-50 text-emerald-700 border-emerald-100';
                   } else if (p.status === 'Novo Cliente') {
                     statusBadge = 'bg-blue-50 text-blue-700 border-blue-100';
+                  } else if (p.status === 'Inativo') {
+                    statusBadge = 'bg-amber-50 text-amber-700 border-amber-100';
                   } else {
                     statusBadge = 'bg-red-50 text-red-700 border-red-100';
                   }
@@ -602,6 +605,7 @@ export const PatientsList: React.FC<PatientsListProps> = ({
                   <span className={`inline-block px-2 py-0.5 rounded-full font-bold text-[9px] mt-0.5 ${
                     selectedPatient.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
                     selectedPatient.status === 'Novo Cliente' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                    selectedPatient.status === 'Inativo' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
                     'bg-red-50 text-red-700 border border-red-100'
                   }`}>{selectedPatient.status}</span>
                 </div>

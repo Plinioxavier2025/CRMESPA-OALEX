@@ -19,7 +19,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [convenio, setConvenio] = useState('');
-  const [status, setStatus] = useState<'Novo Cliente' | 'Ativo' | 'Desistiu'>('Novo Cliente');
+  const [status, setStatus] = useState<'Novo Cliente' | 'Ativo' | 'Desistiu' | 'Inativo'>('Novo Cliente');
   const [motivoDesistencia, setMotivoDesistencia] = useState('');
   const [motivoCustomizado, setMotivoCustomizado] = useState('');
   const [conveniosList, setConveniosList] = useState<string[]>([]);
@@ -265,9 +265,10 @@ export const PatientForm: React.FC<PatientFormProps> = ({
               }}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-brand-blue-primary focus:ring-1 focus:ring-brand-blue-primary/20 text-sm outline-none bg-white transition-all appearance-none"
             >
-              <option value="Novo Cliente">Novo Cliente</option>
+               <option value="Novo Cliente">Novo Cliente</option>
               <option value="Ativo">Ativo</option>
               <option value="Desistiu">Desistiu</option>
+              <option value="Inativo">Inativo</option>
             </select>
           </div>
         </div>

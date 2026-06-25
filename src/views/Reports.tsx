@@ -344,6 +344,7 @@ export const Reports: React.FC = () => {
                   <option value="Novo Cliente">Novo Cliente</option>
                   <option value="Ativo">Ativo</option>
                   <option value="Desistiu">Desistiu</option>
+                  <option value="Inativo">Inativo</option>
                 </select>
 
                 <select
@@ -402,6 +403,7 @@ export const Reports: React.FC = () => {
                       <span className={`px-2.5 py-0.5 rounded-full border text-[9px] font-bold ${
                         p.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                         p.status === 'Novo Cliente' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                        p.status === 'Inativo' ? 'bg-amber-50 text-amber-700 border-amber-100' :
                         'bg-red-50 text-red-700 border-red-100'
                       }`}>{p.status}</span>
                     </td>

@@ -144,6 +144,7 @@ export const Dashboard: React.FC<{
   const activePatients = patients.filter(p => p.status === 'Ativo').length;
   const newPatients = patients.filter(p => p.status === 'Novo Cliente').length;
   const desistentesPatients = patients.filter(p => p.status === 'Desistiu').length;
+  const inativoPatients = patients.filter(p => p.status === 'Inativo').length;
 
 
 
@@ -197,6 +198,7 @@ export const Dashboard: React.FC<{
   const statusPieData = [
     { name: 'Ativos', value: activePatients, color: '#059669' },
     { name: 'Novos', value: newPatients, color: '#94A3B8' },
+    { name: 'Inativos', value: inativoPatients, color: '#F59E0B' },
     { name: 'Desistentes', value: desistentesPatients, color: '#EF4444' }
   ];
 

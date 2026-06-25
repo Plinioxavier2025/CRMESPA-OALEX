@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS pacientes (
     nome VARCHAR(255) NOT NULL,
     telefone VARCHAR(50) NOT NULL,
     convenio VARCHAR(100) NOT NULL,
-    status VARCHAR(50) NOT NULL CHECK (status IN ('Novo Cliente', 'Ativo', 'Desistiu')),
+    status VARCHAR(50) NOT NULL CHECK (status IN ('Novo Cliente', 'Ativo', 'Desistiu', 'Inativo')),
     motivo_desistencia TEXT, -- "Financeiro", "Mudança", etc. and description
     data_cadastro DATE NOT NULL DEFAULT CURRENT_DATE,
     hora_cadastro TIME NOT NULL DEFAULT CURRENT_TIME,

@@ -14,7 +14,7 @@ export interface Paciente {
   nome: string;
   telefone: string;
   convenio: string;
-  status: 'Novo Cliente' | 'Ativo' | 'Desistiu';
+  status: 'Novo Cliente' | 'Ativo' | 'Desistiu' | 'Inativo';
   motivo_desistencia?: string; // e.g. "Questão financeira", "Alta terapêutica", "Outro: Descrição..."
   data_cadastro: string; // YYYY-MM-DD
   hora_cadastro: string; // HH:MM:SS
