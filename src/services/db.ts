@@ -194,7 +194,7 @@ export const db = {
     // Deduplicar em tempo de execução
     const seen = new Set<string>();
     const deduplicated: Paciente[] = [];
-    let modified = false;
+    const duplicateIdsToDelete: string[] = [];
 
     for (const p of data) {
       const nameNorm = (p.nome || '').toLowerCase().trim();
@@ -202,24 +202,25 @@ export const db = {
       const key = `${nameNorm}_${phoneNorm}`;
 
       if (seen.has(key)) {
-        modified = true;
-        if (supabase) {
-          await supabase.from('pacientes').delete().eq('id', p.id);
-        }
+        duplicateIdsToDelete.push(p.id);
       } else {
         seen.add(key);
         deduplicated.push(p);
       }
     }
 
-    if (modified) {
-      if (!supabase) {
+    if (duplicateIdsToDelete.length > 0) {
+      if (supabase) {
+        // Deleta em lote e em segundo plano (sem await) para não travar a UI
+        supabase.from('pacientes').delete().in('id', duplicateIdsToDelete).then(({ error }) => {
+          if (error) console.error("Erro ao deletar duplicados em lote:", error);
+        });
+      } else {
         localStorage.setItem('crm_alex_pacientes', JSON.stringify(deduplicated));
       }
-      return deduplicated;
     }
 
-    return data;
+    return deduplicated;
   },
 
   async savePaciente(paciente: Omit<Paciente, 'id' | 'data_cadastro' | 'hora_cadastro' | 'data_ultima_atualizacao' | 'hora_ultima_atualizacao'> & { 
