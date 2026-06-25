@@ -177,12 +177,8 @@ export const Dashboard: React.FC<{
   // Math calculation for Growth comparing selected month to previous month
   const selectedMonthStart = `${selectedYear}-${selectedMonth}-01`;
 
-  // Base de ativos no mês anterior (apenas do sistema ou modificados no sistema a partir de junho de 2026)
+  // Base de ativos no mês anterior (incluindo planilha para representar a base real de comparação)
   const activeInPrevMonth = patients.filter(p => {
-    const isSystemScope = (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
-                          (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro);
-    if (!isSystemScope) return false;
-
     const registeredBefore = p.data_cadastro < selectedMonthStart;
     const wasInactiveOrDesistiuBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao < selectedMonthStart;
     
