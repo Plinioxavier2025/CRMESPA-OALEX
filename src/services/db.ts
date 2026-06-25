@@ -303,6 +303,75 @@ export const db = {
   },
 
   async autoTransitionPatients(): Promise<void> {
+    // CORREÇÃO DOS PACIENTES EXISTENTES:
+    try {
+      const allPatients = await this.getPacientes();
+      let modified = false;
+      const desistentesNomes = [
+        'Beatriz Vasconcelos',
+        'Renata Lins Albuquerque',
+        'Gustavo Henrique Costa',
+        'Letícia Spiller Lima',
+        'Tony Ramos Fernandes',
+        'Glória Pires de Souza'
+      ];
+
+      const toSave = allPatients.filter((p, index, self) => {
+        const nameNorm = p.nome.toLowerCase().trim();
+
+        // 1. Se o paciente veio de planilha e está como Novo Cliente, muda para Ativo
+        if (p.usuario_cadastro.includes('Planilha') && p.status === 'Novo Cliente') {
+          p.status = 'Ativo';
+          modified = true;
+        }
+
+        // 2. Reverter desistentes originais que foram alterados ou duplicados
+        if (desistentesNomes.some(n => n.toLowerCase() === nameNorm)) {
+          if (p.usuario_cadastro.includes('Planilha')) {
+            // Se for duplicata da planilha, e o original existir, remove a duplicata
+            const hasOriginal = self.some((x, idx) => idx !== index && x.nome.toLowerCase().trim() === nameNorm && !x.usuario_cadastro.includes('Planilha'));
+            if (hasOriginal) {
+              modified = true;
+              return false; // Remove duplicata da planilha
+            } else {
+              // Se não existir o original, garante que o status é Desistiu
+              if (p.status !== 'Desistiu') {
+                p.status = 'Desistiu';
+                modified = true;
+              }
+            }
+          } else {
+            // Registro original: garante que o status é Desistiu
+            if (p.status !== 'Desistiu') {
+              p.status = 'Desistiu';
+              modified = true;
+            }
+          }
+        }
+        return true;
+      });
+
+      if (modified) {
+        if (supabase) {
+          for (const p of allPatients) {
+            const shouldDelete = !toSave.some(x => x.id === p.id);
+            if (shouldDelete) {
+              await supabase.from('pacientes').delete().eq('id', p.id);
+            } else {
+              const matchingSaved = toSave.find(x => x.id === p.id);
+              if (matchingSaved && matchingSaved.status !== p.status) {
+                await supabase.from('pacientes').update({ status: matchingSaved.status }).eq('id', p.id);
+              }
+            }
+          }
+        } else {
+          localStorage.setItem('crm_alex_pacientes', JSON.stringify(toSave));
+        }
+      }
+    } catch (err) {
+      console.error("Erro na migração de correção dos pacientes:", err);
+    }
+
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
