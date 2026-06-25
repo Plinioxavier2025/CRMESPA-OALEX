@@ -14,8 +14,11 @@ import {
   X,
   UserCheck2,
   ShieldAlert,
-  ArrowUpDown
+  ArrowUpDown,
+  Printer
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { PatientForm } from '../components/PatientForm';
 
 interface PatientsListProps {
@@ -222,6 +225,82 @@ export const PatientsList: React.FC<PatientsListProps> = ({
     }
   };
 
+  const exportFilteredToPDF = () => {
+    try {
+      const doc = new jsPDF();
+      const currentDate = new Date().toLocaleDateString('pt-BR');
+      
+      let titleText = 'Relatório Geral de Pacientes';
+      if (filterStatus) {
+        titleText = `Relatório de Pacientes - Status: ${filterStatus}`;
+      } else if (search) {
+        titleText = 'Relatório Filtrado de Pacientes';
+      }
+      
+      // Header branding
+      doc.setFillColor(13, 46, 94); // Navy blue primary color
+      doc.rect(0, 0, 210, 30, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.text('CRM ESPAÇO ALEX', 15, 18);
+      
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(200, 220, 255);
+      doc.text('Espaço Alex Silveira - Consultório de Psicologia', 15, 24);
+      doc.text(`Gerado em: ${currentDate}`, 160, 24);
+
+      // Title
+      doc.setTextColor(13, 46, 94);
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.text(titleText, 15, 42);
+
+      // Table columns (same order as table)
+      const tableHeaders = [['Nome Completo', 'Telefone', 'Convênio', 'Status', 'Data Cadastro']];
+      
+      const formatD = (dStr: string) => {
+        const parts = dStr.split('-');
+        if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return dStr;
+      };
+
+      const tableRows = sortedPatients.map(p => [
+        p.nome,
+        p.telefone,
+        p.convenio,
+        p.status,
+        formatD(p.data_cadastro)
+      ]);
+
+      // Call AutoTable plugin
+      autoTable(doc, {
+        startY: 48,
+        head: tableHeaders,
+        body: tableRows,
+        theme: 'striped',
+        headStyles: { 
+          fillColor: [13, 46, 94], 
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold'
+        },
+        bodyStyles: { fontSize: 9 },
+        margin: { horizontal: 15 },
+      });
+
+      const statusSuffix = filterStatus ? `_${filterStatus.toLowerCase().replace(/\s+/g, '_')}` : '';
+      const finalFileName = `relatorio_pacientes${statusSuffix}.pdf`;
+
+      doc.save(finalFileName);
+    } catch (e) {
+      console.error('Erro ao gerar PDF:', e);
+      alert('Erro ao gerar relatório em PDF.');
+    }
+  };
+
   return (
     <div className="space-y-6">
       
@@ -280,6 +359,16 @@ export const PatientsList: React.FC<PatientsListProps> = ({
               title="Recarregar dados"
             >
               <RefreshCw className="w-4 h-4" />
+            </button>
+
+            {/* Export PDF */}
+            <button
+              onClick={exportFilteredToPDF}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-brand-blue-dark text-xs font-bold rounded-xl transition-all cursor-pointer"
+              title="Exportar lista atual de pacientes para PDF"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Exportar PDF</span>
             </button>
 
             {/* Register Shortcut */}
