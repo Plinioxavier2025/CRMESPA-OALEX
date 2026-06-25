@@ -1,6 +1,15 @@
 -- SQL Schema for CRM ESPAÇO ALEX
 -- Compatible with Supabase PostgreSQL
 
+-- =========================================================================
+-- ATUALIZAÇÃO PARA BANCO DE DADOS EXISTENTE:
+-- Se você já possui a tabela de pacientes criada, execute as seguintes linhas
+-- no editor SQL do seu painel do Supabase para suportar desfazer importações:
+--
+-- ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS import_id VARCHAR(100);
+-- ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS importado_em TIMESTAMP WITH TIME ZONE;
+-- =========================================================================
+
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -32,7 +41,9 @@ CREATE TABLE IF NOT EXISTS pacientes (
     hora_cadastro TIME NOT NULL DEFAULT CURRENT_TIME,
     data_ultima_atualizacao DATE NOT NULL DEFAULT CURRENT_DATE,
     hora_ultima_atualizacao TIME NOT NULL DEFAULT CURRENT_TIME,
-    usuario_cadastro VARCHAR(255) NOT NULL -- Name or Email of the user who registered
+    usuario_cadastro VARCHAR(255) NOT NULL, -- Name or Email of the user who registered
+    import_id VARCHAR(100),
+    importado_em TIMESTAMP WITH TIME ZONE
 );
 
 -- Enable RLS for pacientes

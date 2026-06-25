@@ -21,6 +21,8 @@ export interface Paciente {
   data_ultima_atualizacao: string; // YYYY-MM-DD
   hora_ultima_atualizacao: string; // HH:MM:SS
   usuario_cadastro: string; // user name/email
+  import_id?: string;
+  importado_em?: string;
 }
 
 export interface Log {
@@ -254,6 +256,17 @@ export const db = {
     }
     const pacientes = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
     const filtered = pacientes.filter(p => p.id !== id);
+    setLocal('pacientes', filtered);
+    return true;
+  },
+
+  async deletePacientesByImportId(importId: string): Promise<boolean> {
+    if (supabase) {
+      const { error } = await supabase.from('pacientes').delete().eq('import_id', importId);
+      return !error;
+    }
+    const pacientes = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
+    const filtered = pacientes.filter(p => p.import_id !== importId);
     setLocal('pacientes', filtered);
     return true;
   },
