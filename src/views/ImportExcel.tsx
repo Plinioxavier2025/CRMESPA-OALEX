@@ -203,7 +203,7 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
             nome: nomeVal.trim(),
             telefone: formattedPhone,
             convenio: finalConvenio,
-            status: 'Novo Cliente' as const,
+            status: 'Ativo' as const,
             rowNum
           };
 
@@ -273,7 +273,7 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
           nome: item.nome,
           telefone: item.telefone,
           convenio: item.convenio,
-          status: 'Novo Cliente',
+          status: 'Ativo',
           usuario_cadastro: activeUserName + ' (Planilha)',
           import_id: importId,
           importado_em: importadoEm
