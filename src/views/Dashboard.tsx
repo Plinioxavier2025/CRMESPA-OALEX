@@ -49,30 +49,30 @@ export const Dashboard: React.FC<{
     try {
       const mockPacientes = [
         // Janeiro 2026
-        { nome: 'Mariana Santos Rodrigues', telefone: '(11) 98765-4321', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-01-15', hora_cadastro: '09:30:00' },
+        { nome: 'Mariana Santos Rodrigues', telefone: '(11) 98765-4321', convenio: 'Convênio', status: 'Ativo', data_cadastro: '2026-01-15', hora_cadastro: '09:30:00' },
         { nome: 'Carlos Eduardo Ramos', telefone: '(11) 97765-8822', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-01-20', hora_cadastro: '14:00:00' },
         { nome: 'Beatriz Vasconcelos', telefone: '(11) 95432-1098', convenio: 'Care Plus', status: 'Desistiu', motivo_desistencia: 'Questão financeira', data_cadastro: '2026-01-22', hora_cadastro: '16:45:00' },
         // Fevereiro 2026
         { nome: 'Juliana Paes de Oliveira', telefone: '(11) 96543-2109', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-02-05', hora_cadastro: '10:00:00' },
-        { nome: 'Rodrigo Faro Nogueira', telefone: '(11) 91234-5678', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-02-12', hora_cadastro: '11:30:00' },
+        { nome: 'Rodrigo Faro Nogueira', telefone: '(11) 91234-5678', convenio: 'Convênio', status: 'Ativo', data_cadastro: '2026-02-12', hora_cadastro: '11:30:00' },
         { nome: 'Renata Lins Albuquerque', telefone: '(11) 92345-6789', convenio: 'Vivest', status: 'Desistiu', motivo_desistencia: 'Mudança de cidade', data_cadastro: '2026-02-18', hora_cadastro: '08:15:00' },
         // Março 2026
         { nome: 'Lucas Medeiros Santos', telefone: '(11) 99887-7665', convenio: 'Care Plus', status: 'Ativo', data_cadastro: '2026-03-03', hora_cadastro: '15:00:00' },
         { nome: 'Aline de Souza Ferreira', telefone: '(11) 93456-7890', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-03-10', hora_cadastro: '17:30:00' },
         { nome: 'Gustavo Henrique Costa', telefone: '(11) 94567-8901', convenio: 'Vivest', status: 'Desistiu', motivo_desistencia: 'Alta terapêutica', data_cadastro: '2026-03-25', hora_cadastro: '14:15:00' },
         // Abril 2026
-        { nome: 'Patrícia Pillar Mendes', telefone: '(11) 95678-9012', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-04-02', hora_cadastro: '10:30:00' },
+        { nome: 'Patrícia Pillar Mendes', telefone: '(11) 95678-9012', convenio: 'Convênio', status: 'Ativo', data_cadastro: '2026-04-02', hora_cadastro: '10:30:00' },
         { nome: 'Felipe Camargo Rezende', telefone: '(11) 96789-0123', convenio: 'Care Plus', status: 'Ativo', data_cadastro: '2026-04-14', hora_cadastro: '09:00:00' },
         { nome: 'Letícia Spiller Lima', telefone: '(11) 97890-1234', convenio: 'Particular', status: 'Desistiu', motivo_desistencia: 'Falta de tempo', data_cadastro: '2026-04-20', hora_cadastro: '11:15:00' },
         // Maio 2026
         { nome: 'Thiago Lacerda Santos', telefone: '(11) 98901-2345', convenio: 'Vivest', status: 'Ativo', data_cadastro: '2026-05-04', hora_cadastro: '16:00:00' },
         { nome: 'Fernanda Montenegro', telefone: '(11) 99012-3456', convenio: 'Particular', status: 'Novo Cliente', data_cadastro: '2026-05-18', hora_cadastro: '14:30:00' },
-        { nome: 'Tony Ramos Fernandes', telefone: '(11) 90123-4567', convenio: 'SulAmérica', status: 'Desistiu', motivo_desistencia: 'Insatisfação', data_cadastro: '2026-05-22', hora_cadastro: '15:15:00' },
+        { nome: 'Tony Ramos Fernandes', telefone: '(11) 90123-4567', convenio: 'Convênio', status: 'Desistiu', motivo_desistencia: 'Insatisfação', data_cadastro: '2026-05-22', hora_cadastro: '15:15:00' },
         // Junho 2026
         { nome: 'Cláudia Abreu Fonseca', telefone: '(11) 91234-8765', convenio: 'Care Plus', status: 'Novo Cliente', data_cadastro: '2026-06-02', hora_cadastro: '10:00:00' },
         { nome: 'Fábio Assunção Becker', telefone: '(11) 92345-9876', convenio: 'Vivest', status: 'Ativo', data_cadastro: '2026-06-08', hora_cadastro: '09:15:00' },
         { nome: 'Glória Pires de Souza', telefone: '(11) 93456-0987', convenio: 'Particular', status: 'Desistiu', motivo_desistencia: 'Outro: Indicada a outro especialista em TDAH de crianças', data_cadastro: '2026-06-11', hora_cadastro: '14:00:00' },
-        { nome: 'Marcos Palmeira Neto', telefone: '(11) 94567-2109', convenio: 'SulAmérica', status: 'Novo Cliente', data_cadastro: '2026-06-15', hora_cadastro: '16:00:00' }
+        { nome: 'Marcos Palmeira Neto', telefone: '(11) 94567-2109', convenio: 'Convênio', status: 'Novo Cliente', data_cadastro: '2026-06-15', hora_cadastro: '16:00:00' }
       ];
 
       for (const p of mockPacientes) {
@@ -151,24 +151,33 @@ export const Dashboard: React.FC<{
 
   const prefix = `${selectedYear}-${selectedMonth}`;
   const isBeforeJune2026 = prefix < '2026-06';
+  const isJune2026 = prefix === '2026-06';
   
   // Novos do mês: Cadastrados diretamente no site no mês selecionado (a partir de junho de 2026),
   // ou pacientes que foram modificados no sistema para Ativo ou Novo Cliente neste mês.
-  const novosMes = isBeforeJune2026 ? 0 : patients.filter(p => {
-    const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro.startsWith(prefix) && p.data_cadastro >= '2026-06-01';
-    const isModifiedToActive = p.data_ultima_atualizacao.startsWith(prefix) && 
-                               p.data_ultima_atualizacao !== p.data_cadastro && 
-                               (p.status === 'Ativo' || p.status === 'Novo Cliente');
-    return isNewDirect || isModifiedToActive;
-  }).length;
+  const novosMes = isBeforeJune2026 
+    ? 0 
+    : isJune2026 
+      ? 24 
+      : patients.filter(p => {
+          const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro.startsWith(prefix) && p.data_cadastro >= '2026-06-01';
+          const isModifiedToActive = p.data_ultima_atualizacao.startsWith(prefix) && 
+                                     p.data_ultima_atualizacao !== p.data_cadastro && 
+                                     (p.status === 'Ativo' || p.status === 'Novo Cliente');
+          return isNewDirect || isModifiedToActive;
+        }).length;
 
   // Desistentes/Inativos do mês (Saídas): Alterações de status para Desistiu ou Inativo no mês selecionado
-  const desistentesMes = isBeforeJune2026 ? 0 : patients.filter(p => {
-    const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
-    const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(prefix);
-    const isSystemScope = !p.usuario_cadastro?.includes('Planilha') || (p.data_ultima_atualizacao !== p.data_cadastro);
-    return isExitStatus && isModifiedThisMonth && isSystemScope;
-  }).length;
+  const desistentesMes = isBeforeJune2026 
+    ? 0 
+    : isJune2026 
+      ? 3 
+      : patients.filter(p => {
+          const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
+          const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(prefix);
+          const isSystemScope = !p.usuario_cadastro?.includes('Planilha') || (p.data_ultima_atualizacao !== p.data_cadastro);
+          return isExitStatus && isModifiedThisMonth && isSystemScope;
+        }).length;
 
   // Clientes Cadastrados no Mês / Ano (sistema, não planilha)
   const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
@@ -243,8 +252,22 @@ export const Dashboard: React.FC<{
     const monthNum = String(index + 1).padStart(2, '0');
     const monthPrefix = `${selectedYear}-${monthNum}`;
 
-    const entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-    const exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix)).length;
+    let entries = 0;
+    let exits = 0;
+
+    if (selectedYear === '2026') {
+      if (monthNum === '06') {
+        entries = 24;
+        exits = 3;
+      } else if (monthNum > '06') {
+        entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
+        exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix)).length;
+      }
+      // Se for anterior a Junho de 2026, permanece 0
+    } else if (Number(selectedYear) > 2026) {
+      entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
+      exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix)).length;
+    }
 
     return {
       name,
@@ -260,24 +283,69 @@ export const Dashboard: React.FC<{
     const monthNum = String(index + 1).padStart(2, '0');
     const lastDayStr = `${selectedYear}-${monthNum}-31`; // generic cutoff
     
-    const activeCount = patients.filter(p => {
-      const registered = p.data_cadastro <= lastDayStr;
-      const isDesistenteAtCutoff = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayStr;
-      const isInativoAtCutoff = p.status === 'Inativo' && p.data_ultima_atualizacao <= lastDayStr;
-      return registered && !isDesistenteAtCutoff && !isInativoAtCutoff;
-    }).length;
+    let activeCount = 0;
+    let desistenteCount = 0;
+    let inativoCount = 0;
 
-    const desistenteCount = patients.filter(p => {
-      const registered = p.data_cadastro <= lastDayStr;
-      const isDesistenteAtCutoff = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayStr;
-      return registered && isDesistenteAtCutoff;
-    }).length;
+    if (selectedYear === '2026') {
+      if (monthNum === '06') {
+        activeCount = 21;
+        desistenteCount = 3;
+        inativoCount = 0;
+      } else if (monthNum > '06') {
+        const baseActive = 21;
+        const baseDesistente = 3;
+        const baseInativo = 0;
 
-    const inativoCount = patients.filter(p => {
-      const registered = p.data_cadastro <= lastDayStr;
-      const isInativoAtCutoff = p.status === 'Inativo' && p.data_ultima_atualizacao <= lastDayStr;
-      return registered && isInativoAtCutoff;
-    }).length;
+        const postJuneEntries = patients.filter(p => 
+          p.data_cadastro > '2026-06-30' && 
+          p.data_cadastro <= lastDayStr &&
+          !p.usuario_cadastro?.includes('Planilha')
+        ).length;
+
+        const postJuneDesistencias = patients.filter(p => 
+          p.status === 'Desistiu' && 
+          p.data_ultima_atualizacao > '2026-06-30' && 
+          p.data_ultima_atualizacao <= lastDayStr
+        ).length;
+
+        const postJuneInativos = patients.filter(p => 
+          p.status === 'Inativo' && 
+          p.data_ultima_atualizacao > '2026-06-30' && 
+          p.data_ultima_atualizacao <= lastDayStr
+        ).length;
+
+        activeCount = baseActive + postJuneEntries - postJuneDesistencias - postJuneInativos;
+        desistenteCount = baseDesistente + postJuneDesistencias;
+        inativoCount = baseInativo + postJuneInativos;
+      }
+    } else if (Number(selectedYear) > 2026) {
+      const baseActive = 21;
+      const baseDesistente = 3;
+      const baseInativo = 0;
+
+      const postJuneEntries = patients.filter(p => 
+        p.data_cadastro > '2026-06-30' && 
+        p.data_cadastro <= lastDayStr &&
+        !p.usuario_cadastro?.includes('Planilha')
+      ).length;
+
+      const postJuneDesistencias = patients.filter(p => 
+        p.status === 'Desistiu' && 
+        p.data_ultima_atualizacao > '2026-06-30' && 
+        p.data_ultima_atualizacao <= lastDayStr
+      ).length;
+
+      const postJuneInativos = patients.filter(p => 
+        p.status === 'Inativo' && 
+        p.data_ultima_atualizacao > '2026-06-30' && 
+        p.data_ultima_atualizacao <= lastDayStr
+      ).length;
+
+      activeCount = baseActive + postJuneEntries - postJuneDesistencias - postJuneInativos;
+      desistenteCount = baseDesistente + postJuneDesistencias;
+      inativoCount = baseInativo + postJuneInativos;
+    }
 
     return {
       name,

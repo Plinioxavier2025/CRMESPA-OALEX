@@ -330,6 +330,7 @@ header.sticky {
     transform: translateY(20px) scale(0.96);
     filter: blur(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -346,9 +347,11 @@ header.sticky {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }

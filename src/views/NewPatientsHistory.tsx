@@ -75,17 +75,41 @@ export const NewPatientsHistory: React.FC = () => {
   const monthlyData = monthsList.map(month => {
     const yearMonthPrefix = `${selectedYear}-${month.value}`;
     
-    // Entradas (registered in that month, not imported)
-    const entries = patients.filter(p => 
-      p.data_cadastro.startsWith(yearMonthPrefix) && 
-      !p.usuario_cadastro?.includes('Planilha')
-    ).length;
+    let entries = 0;
+    let exits = 0;
 
-    // Saídas (marked as Desistiu, with date of update in that month)
-    const exits = patients.filter(p => 
-      p.status === 'Desistiu' && 
-      p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
-    ).length;
+    if (selectedYear === '2026') {
+      if (month.value === '06') {
+        entries = 24;
+        exits = 3;
+      } else if (month.value > '06') {
+        // Entradas (registered in that month, not imported)
+        entries = patients.filter(p => 
+          p.data_cadastro.startsWith(yearMonthPrefix) && 
+          !p.usuario_cadastro?.includes('Planilha')
+        ).length;
+
+        // Saídas (marked as Desistiu, with date of update in that month)
+        exits = patients.filter(p => 
+          p.status === 'Desistiu' && 
+          p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
+        ).length;
+      }
+      // Se for anterior a Junho de 2026, entradas e saídas permanecem 0
+    } else if (Number(selectedYear) > 2026) {
+      // Entradas (registered in that month, not imported)
+      entries = patients.filter(p => 
+        p.data_cadastro.startsWith(yearMonthPrefix) && 
+        !p.usuario_cadastro?.includes('Planilha')
+      ).length;
+
+      // Saídas (marked as Desistiu, with date of update in that month)
+      exits = patients.filter(p => 
+        p.status === 'Desistiu' && 
+        p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
+      ).length;
+    }
+    // Se for anterior a 2026, entradas e saídas permanecem 0
 
     const balance = entries - exits;
 

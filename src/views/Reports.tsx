@@ -80,17 +80,41 @@ export const Reports: React.FC = () => {
     const targetPrefix = `2026-${m.num}`;
     const lastDayCutoff = `2026-${m.num}-31`;
 
-    const entries = patients.filter(p => p.data_cadastro.startsWith(targetPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-    const exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(targetPrefix)).length;
+    let entries = 0;
+    let exits = 0;
+    let activeAtMonth = 0;
+
+    if (m.num === '06') {
+      entries = 24;
+      exits = 3;
+      activeAtMonth = 21;
+    } else if (m.num > '06') {
+      entries = patients.filter(p => p.data_cadastro.startsWith(targetPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
+      exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(targetPrefix)).length;
+
+      const baseActive = 21;
+      const postJuneEntries = patients.filter(p => 
+        p.data_cadastro > '2026-06-30' && 
+        p.data_cadastro <= lastDayCutoff &&
+        !p.usuario_cadastro?.includes('Planilha')
+      ).length;
+
+      const postJuneExits = patients.filter(p => 
+        p.status === 'Desistiu' && 
+        p.data_ultima_atualizacao > '2026-06-30' && 
+        p.data_ultima_atualizacao <= lastDayCutoff
+      ).length;
+
+      const postJuneInactives = patients.filter(p => 
+        p.status === 'Inativo' && 
+        p.data_ultima_atualizacao > '2026-06-30' && 
+        p.data_ultima_atualizacao <= lastDayCutoff
+      ).length;
+
+      activeAtMonth = baseActive + postJuneEntries - postJuneExits - postJuneInactives;
+    } // Se for anterior a Junho de 2026: entries = 0, exits = 0, activeAtMonth = 0
+
     const netGrowth = entries - exits;
-
-    // Calculate active at end of this month
-    const activeAtMonth = patients.filter(p => {
-      const registered = p.data_cadastro <= lastDayCutoff;
-      const dropped = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayCutoff;
-      return registered && !dropped;
-    }).length;
-
     const totalPeriod = activeAtMonth + exits;
     const retentionRate = totalPeriod > 0 ? (activeAtMonth / totalPeriod) * 100 : 100;
 

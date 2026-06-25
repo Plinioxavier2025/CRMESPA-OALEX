@@ -28,7 +28,7 @@ interface ImportReport {
 export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserName }) => {
   const [activeSubTab, setActiveSubTab] = useState<'import' | 'history'>('import');
   const [file, setFile] = useState<File | null>(null);
-  const [importMode, setImportMode] = useState<'update' | 'ignore'>('update');
+  const [importMode, setImportMode] = useState<'update' | 'ignore'>('ignore');
   const [parsing, setParsing] = useState(false);
   const [validationReport, setValidationReport] = useState<{
     valid: any[];
@@ -198,8 +198,9 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
 
           // Fallback to "Particular" if no convenio is present
           let finalConvenio = convVal.trim() || 'Particular';
-          if (finalConvenio.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 'convenio') {
-            finalConvenio = 'SulAmérica';
+          const convNorm = finalConvenio.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+          if (convNorm === 'sulamerica' || convNorm === 'sulamericaseguros') {
+            finalConvenio = 'Convenio';
           }
 
           const entry = {
@@ -512,7 +513,7 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
                   <span>Instruções sobre o formato da planilha:</span>
                 </span>
                 <ul className="list-disc pl-4 space-y-1 font-light leading-relaxed">
-                  <li>A planilha deve conter colunas legíveis para: <strong>Nome</strong> (Nome Completo), <strong>Telefone</strong> (com DDD) e <strong>Convênio</strong> (Opcional - ex: SulAmérica, Particular, Care Plus, Vivest).</li>
+                  <li>A planilha deve conter colunas legíveis para: <strong>Nome</strong> (Nome Completo), <strong>Telefone</strong> (com DDD) e <strong>Convênio</strong> (Opcional - ex: Convenio, Particular, Care Plus, Vivest).</li>
                   <li>Registros com mesmo nome ou telefone já registrados serão avaliados conforme a opção selecionada (Atualizar ou Ignorar).</li>
                   <li>Linhas sem dados de nome ou com formato de telefone inválido serão listadas na aba de erros para correção.</li>
                 </ul>

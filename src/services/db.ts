@@ -43,13 +43,13 @@ const MOCK_USUARIOS: Usuario[] = [
 
 const MOCK_PACIENTES: Paciente[] = [
   // Janeiro 2026
-  { id: 'p1', nome: 'Mariana Santos Rodrigues', telefone: '(11) 98765-4321', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-01-15', hora_cadastro: '09:30:00', data_ultima_atualizacao: '2026-06-18', hora_ultima_atualizacao: '16:00:00', usuario_cadastro: 'Alex Silveira' },
+  { id: 'p1', nome: 'Mariana Santos Rodrigues', telefone: '(11) 98765-4321', convenio: 'Convenio', status: 'Ativo', data_cadastro: '2026-01-15', hora_cadastro: '09:30:00', data_ultima_atualizacao: '2026-06-18', hora_ultima_atualizacao: '16:00:00', usuario_cadastro: 'Alex Silveira' },
   { id: 'p2', nome: 'Carlos Eduardo Ramos', telefone: '(11) 97765-8822', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-01-20', hora_cadastro: '14:00:00', data_ultima_atualizacao: '2026-05-10', hora_ultima_atualizacao: '11:15:00', usuario_cadastro: 'Alex Silveira' },
   { id: 'p3', nome: 'Beatriz Vasconcelos', telefone: '(11) 95432-1098', convenio: 'Care Plus', status: 'Desistiu', motivo_desistencia: 'Questão financeira', data_cadastro: '2026-01-22', hora_cadastro: '16:45:00', data_ultima_atualizacao: '2026-03-15', hora_ultima_atualizacao: '14:20:00', usuario_cadastro: 'Alex Silveira' },
 
   // Fevereiro 2026
   { id: 'p4', nome: 'Juliana Paes de Oliveira', telefone: '(11) 96543-2109', convenio: 'Particular', status: 'Ativo', data_cadastro: '2026-02-05', hora_cadastro: '10:00:00', data_ultima_atualizacao: '2026-06-12', hora_ultima_atualizacao: '09:00:00', usuario_cadastro: 'Alex Silveira' },
-  { id: 'p5', nome: 'Rodrigo Faro Nogueira', telefone: '(11) 91234-5678', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-02-12', hora_cadastro: '11:30:00', data_ultima_atualizacao: '2026-05-02', hora_ultima_atualizacao: '15:30:00', usuario_cadastro: 'Administrador Espaço' },
+  { id: 'p5', nome: 'Rodrigo Faro Nogueira', telefone: '(11) 91234-5678', convenio: 'Convenio', status: 'Ativo', data_cadastro: '2026-02-12', hora_cadastro: '11:30:00', data_ultima_atualizacao: '2026-05-02', hora_ultima_atualizacao: '15:30:00', usuario_cadastro: 'Administrador Espaço' },
   { id: 'p6', nome: 'Renata Lins Albuquerque', telefone: '(11) 92345-6789', convenio: 'Vivest', status: 'Desistiu', motivo_desistencia: 'Mudança de cidade', data_cadastro: '2026-02-18', hora_cadastro: '08:15:00', data_ultima_atualizacao: '2026-04-10', hora_ultima_atualizacao: '10:00:00', usuario_cadastro: 'Administrador Espaço' },
 
   // Março 2026
@@ -58,29 +58,29 @@ const MOCK_PACIENTES: Paciente[] = [
   { id: 'p9', nome: 'Gustavo Henrique Costa', telefone: '(11) 94567-8901', convenio: 'Vivest', status: 'Desistiu', motivo_desistencia: 'Alta terapêutica', data_cadastro: '2026-03-25', hora_cadastro: '14:15:00', data_ultima_atualizacao: '2026-06-01', hora_ultima_atualizacao: '16:30:00', usuario_cadastro: 'Administrador Espaço' },
 
   // Abril 2026
-  { id: 'p10', nome: 'Patrícia Pillar Mendes', telefone: '(11) 95678-9012', convenio: 'SulAmérica', status: 'Ativo', data_cadastro: '2026-04-02', hora_cadastro: '10:30:00', data_ultima_atualizacao: '2026-04-02', hora_ultima_atualizacao: '10:30:00', usuario_cadastro: 'Alex Silveira' },
+  { id: 'p10', nome: 'Patrícia Pillar Mendes', telefone: '(11) 95678-9012', convenio: 'Convenio', status: 'Ativo', data_cadastro: '2026-04-02', hora_cadastro: '10:30:00', data_ultima_atualizacao: '2026-04-02', hora_ultima_atualizacao: '10:30:00', usuario_cadastro: 'Alex Silveira' },
   { id: 'p11', nome: 'Felipe Camargo Rezende', telefone: '(11) 96789-0123', convenio: 'Care Plus', status: 'Ativo', data_cadastro: '2026-04-14', hora_cadastro: '09:00:00', data_ultima_atualizacao: '2026-04-14', hora_ultima_atualizacao: '09:00:00', usuario_cadastro: 'Alex Silveira' },
   { id: 'p12', nome: 'Letícia Spiller Lima', telefone: '(11) 97890-1234', convenio: 'Particular', status: 'Desistiu', motivo_desistencia: 'Falta de tempo', data_cadastro: '2026-04-20', hora_cadastro: '11:15:00', data_ultima_atualizacao: '2026-05-18', hora_ultima_atualizacao: '11:15:00', usuario_cadastro: 'Administrador Espaço' },
 
   // Maio 2026
   { id: 'p13', nome: 'Thiago Lacerda Santos', telefone: '(11) 98901-2345', convenio: 'Vivest', status: 'Ativo', data_cadastro: '2026-05-04', hora_cadastro: '16:00:00', data_ultima_atualizacao: '2026-05-04', hora_ultima_atualizacao: '16:00:00', usuario_cadastro: 'Alex Silveira' },
   { id: 'p14', nome: 'Fernanda Montenegro', telefone: '(11) 99012-3456', convenio: 'Particular', status: 'Novo Cliente', data_cadastro: '2026-05-18', hora_cadastro: '14:30:00', data_ultima_atualizacao: '2026-05-18', hora_ultima_atualizacao: '14:30:00', usuario_cadastro: 'Alex Silveira' },
-  { id: 'p15', nome: 'Tony Ramos Fernandes', telefone: '(11) 90123-4567', convenio: 'SulAmérica', status: 'Desistiu', motivo_desistencia: 'Insatisfação', data_cadastro: '2026-05-22', hora_cadastro: '15:15:00', data_ultima_atualizacao: '2026-06-02', hora_ultima_atualizacao: '15:15:00', usuario_cadastro: 'Administrador Espaço' },
+  { id: 'p15', nome: 'Tony Ramos Fernandes', telefone: '(11) 90123-4567', convenio: 'Convenio', status: 'Desistiu', motivo_desistencia: 'Insatisfação', data_cadastro: '2026-05-22', hora_cadastro: '15:15:00', data_ultima_atualizacao: '2026-06-02', hora_ultima_atualizacao: '15:15:00', usuario_cadastro: 'Administrador Espaço' },
 
   // Junho 2026 (Mês atual na simulação)
   { id: 'p16', nome: 'Cláudia Abreu Fonseca', telefone: '(11) 91234-8765', convenio: 'Care Plus', status: 'Novo Cliente', data_cadastro: '2026-06-02', hora_cadastro: '10:00:00', data_ultima_atualizacao: '2026-06-02', hora_ultima_atualizacao: '10:00:00', usuario_cadastro: 'Alex Silveira' },
   { id: 'p17', nome: 'Fábio Assunção Becker', telefone: '(11) 92345-9876', convenio: 'Vivest', status: 'Ativo', data_cadastro: '2026-06-08', hora_cadastro: '09:15:00', data_ultima_atualizacao: '2026-06-08', hora_ultima_atualizacao: '09:15:00', usuario_cadastro: 'Alex Silveira' },
   { id: 'p18', nome: 'Glória Pires de Souza', telefone: '(11) 93456-0987', convenio: 'Particular', status: 'Desistiu', motivo_desistencia: 'Outro: Indicada a outro especialista em TDAH de crianças', data_cadastro: '2026-06-11', hora_cadastro: '14:00:00', data_ultima_atualizacao: '2026-06-19', hora_ultima_atualizacao: '16:45:00', usuario_cadastro: 'Administrador Espaço' },
-  { id: 'p19', nome: 'Marcos Palmeira Neto', telefone: '(11) 94567-2109', convenio: 'SulAmérica', status: 'Novo Cliente', data_cadastro: '2026-06-15', hora_cadastro: '16:00:00', data_ultima_atualizacao: '2026-06-15', hora_ultima_atualizacao: '16:00:00', usuario_cadastro: 'Alex Silveira' }
+  { id: 'p19', nome: 'Marcos Palmeira Neto', telefone: '(11) 94567-2109', convenio: 'Convenio', status: 'Novo Cliente', data_cadastro: '2026-06-15', hora_cadastro: '16:00:00', data_ultima_atualizacao: '2026-06-15', hora_ultima_atualizacao: '16:00:00', usuario_cadastro: 'Alex Silveira' }
 ];
 
 const MOCK_LOGS: Log[] = [
   { id: 'l1', usuario_nome: 'Alex Silveira', acao: 'Login no sistema', detalhes: 'Autenticado com sucesso na clínica Espaço Alex Silveira.', created_at: '2026-06-20T08:00:00Z' },
   { id: 'l2', usuario_nome: 'Administrador Espaço', acao: 'Paciente alterado', detalhes: 'Paciente Glória Pires de Souza marcado como Desistiu. Motivo: Outro', created_at: '2026-06-19T16:45:00Z' },
-  { id: 'l3', usuario_nome: 'Alex Silveira', acao: 'Novo paciente cadastrado', detalhes: 'Paciente Marcos Palmeira Neto cadastrado no convênio SulAmérica.', created_at: '2026-06-15T16:00:00Z' }
+  { id: 'l3', usuario_nome: 'Alex Silveira', acao: 'Novo paciente cadastrado', detalhes: 'Paciente Marcos Palmeira Neto cadastrado no convênio Convenio.', created_at: '2026-06-15T16:00:00Z' }
 ];
 
-const DEFAULT_CONVENIOS = ["SulAmérica", "Particular", "Care Plus", "Vivest"];
+const DEFAULT_CONVENIOS = ["Convenio", "Particular", "Care Plus", "Vivest"];
 
 // Helper functions for localStorage reading/writing
 const getLocal = <T>(key: string, initial: T): T => {
@@ -191,6 +191,26 @@ export const db = {
       data = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
     }
 
+    // Normalizar convênios descritos como "SulAmérica" ou similar para "Convenio"
+    let hasNormalizations = false;
+    data = data.map(p => {
+      const convNorm = (p.convenio || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+      if (convNorm === 'sulamerica' || convNorm === 'sulamericaseguros') {
+        hasNormalizations = true;
+        if (supabase) {
+          supabase.from('pacientes').update({ convenio: 'Convenio' }).eq('id', p.id).then(({ error }) => {
+            if (error) console.error(`Erro ao normalizar convênio do paciente ${p.nome}:`, error);
+          });
+        }
+        return { ...p, convenio: 'Convenio' };
+      }
+      return p;
+    });
+
+    if (hasNormalizations && !supabase) {
+      localStorage.setItem('crm_alex_pacientes', JSON.stringify(data));
+    }
+
     // Deduplicar em tempo de execução
     const seen = new Set<string>();
     const deduplicated: Paciente[] = [];
@@ -230,27 +250,39 @@ export const db = {
     data_ultima_atualizacao?: string;
     hora_ultima_atualizacao?: string;
   }): Promise<Paciente> {
+    // Normalizar convênio se estiver descrito como "SulAmérica" ou similar para "Convenio"
+    let cleanConvenio = paciente.convenio;
+    const convNorm = (cleanConvenio || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+    if (convNorm === 'sulamerica') {
+      cleanConvenio = 'Convenio';
+    }
+
+    const normalizedPaciente = {
+      ...paciente,
+      convenio: cleanConvenio
+    };
+
     const todayStr = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
     const timeStr = new Date().toTimeString().split(' ')[0]; // HH:MM:SS
     
     if (supabase) {
-      if (paciente.id) {
+      if (normalizedPaciente.id) {
         // Update
         const updateObj = {
-          ...paciente,
-          data_ultima_atualizacao: paciente.data_ultima_atualizacao || todayStr,
-          hora_ultima_atualizacao: paciente.hora_ultima_atualizacao || timeStr
+          ...normalizedPaciente,
+          data_ultima_atualizacao: normalizedPaciente.data_ultima_atualizacao || todayStr,
+          hora_ultima_atualizacao: normalizedPaciente.hora_ultima_atualizacao || timeStr
         };
-        const { data } = await supabase.from('pacientes').update(updateObj).eq('id', paciente.id).select().single();
+        const { data } = await supabase.from('pacientes').update(updateObj).eq('id', normalizedPaciente.id).select().single();
         return data;
       } else {
         // Insert
         const insertObj = {
-          ...paciente,
-          data_cadastro: paciente.data_cadastro || todayStr,
-          hora_cadastro: paciente.hora_cadastro || timeStr,
-          data_ultima_atualizacao: paciente.data_ultima_atualizacao || todayStr,
-          hora_ultima_atualizacao: paciente.hora_ultima_atualizacao || timeStr
+          ...normalizedPaciente,
+          data_cadastro: normalizedPaciente.data_cadastro || todayStr,
+          hora_cadastro: normalizedPaciente.hora_cadastro || timeStr,
+          data_ultima_atualizacao: normalizedPaciente.data_ultima_atualizacao || todayStr,
+          hora_ultima_atualizacao: normalizedPaciente.hora_ultima_atualizacao || timeStr
         };
         const { data } = await supabase.from('pacientes').insert([insertObj]).select().single();
         return data;
@@ -258,11 +290,11 @@ export const db = {
     }
 
     const pacientes = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
-    if (paciente.id) {
-      const index = pacientes.findIndex(p => p.id === paciente.id);
+    if (normalizedPaciente.id) {
+      const index = pacientes.findIndex(p => p.id === normalizedPaciente.id);
       const updated = { 
         ...pacientes[index], 
-        ...paciente,
+        ...normalizedPaciente,
         data_ultima_atualizacao: todayStr,
         hora_ultima_atualizacao: timeStr
       } as Paciente;
@@ -271,10 +303,10 @@ export const db = {
       return updated;
     } else {
       const newP: Paciente = {
-        ...paciente,
+        ...normalizedPaciente,
         id: 'p_' + Math.random().toString(36).substring(2, 11),
-        data_cadastro: paciente.data_cadastro || todayStr,
-        hora_cadastro: paciente.hora_cadastro || timeStr,
+        data_cadastro: normalizedPaciente.data_cadastro || todayStr,
+        hora_cadastro: normalizedPaciente.hora_cadastro || timeStr,
         data_ultima_atualizacao: todayStr,
         hora_ultima_atualizacao: timeStr
       } as Paciente;
