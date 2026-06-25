@@ -580,13 +580,16 @@ export const ImportExcel: React.FC<{ activeUserName: string }> = ({ activeUserNa
               {/* Details Tabs preview for errors */}
               {validationReport.errors.length > 0 && (
                 <div className="p-4 bg-red-50 border border-red-100 rounded-xl space-y-2">
-                  <span className="font-bold text-red-850 block">Erros de Validação Encontrados (Corrija na planilha original):</span>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5">
+                    <span className="font-bold text-red-850 block">Linhas com Erros Críticos (Serão ignoradas e não importadas):</span>
+                    <span className="text-[10px] text-red-700 bg-red-100/60 px-2.5 py-0.5 rounded-md font-bold">Não é obrigatório corrigir para prosseguir</span>
+                  </div>
                   <div className="max-h-[140px] overflow-y-auto space-y-1 text-[11px] pr-1">
                     {validationReport.errors.map((err, idx) => (
                       <div key={idx} className="flex justify-between items-center text-red-750 font-light border-b border-red-100/40 pb-1">
                         <span><strong>Linha {err.rowNum}</strong>: {err.reason}</span>
                         <span className="font-mono text-[9px] bg-red-100 px-1.5 py-0.5 rounded text-red-800">
-                          {err.data.Nome || err.data.Telefone ? 'Incompleto' : 'Linha Vazia'}
+                          {err.data.Nome || err.data.Telefone ? 'Dados Inválidos' : 'Linha Vazia'}
                         </span>
                       </div>
                     ))}
