@@ -138,7 +138,7 @@ export const Layout: React.FC<LayoutProps> = ({
         </header>
 
         {/* Main Content Pane */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl w-full mx-auto animate-slide-up relative">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl w-full mx-auto relative">
           <div className="relative z-10">
             {children}
           </div>
