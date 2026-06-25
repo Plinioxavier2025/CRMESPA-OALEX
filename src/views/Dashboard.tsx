@@ -11,7 +11,8 @@ import {
   Calendar,
   Layers,
   Activity,
-  ShieldAlert
+  ShieldAlert,
+  UserX
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -357,7 +358,7 @@ export const Dashboard: React.FC<{
       )}
 
       {/* Primary Indicator Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         
         {/* Total Pacientes */}
         <div 
@@ -392,6 +393,24 @@ export const Dashboard: React.FC<{
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Pacientes Ativos</span>
             <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-brand-green-primary transition-colors">{activePatients}</strong>
             <span className="text-[10px] text-slate-400 mt-1 block">Recebendo atendimento contínuo</span>
+          </div>
+        </div>
+
+        {/* Pacientes Inativos */}
+        <div 
+          onClick={() => {
+            if (navigateToPatients) navigateToPatients('Inativo');
+            else setCurrentTab('pacientes');
+          }}
+          className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer hover:border-amber-600/30 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+        >
+          <div className="p-3.5 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-105 transition-transform">
+            <UserX className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Pacientes Inativos</span>
+            <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-amber-600 transition-colors">{inativoPatients}</strong>
+            <span className="text-[10px] text-slate-400 mt-1 block">Pacientes sem retorno/resposta</span>
           </div>
         </div>
 
