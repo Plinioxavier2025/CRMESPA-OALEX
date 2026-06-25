@@ -150,20 +150,25 @@ export const Dashboard: React.FC<{
 
 
   const prefix = `${selectedYear}-${selectedMonth}`;
+  const isBeforeJune2026 = prefix < '2026-06';
   
-  // Apenas clientes novos cadastrados pelo sistema (não planilha) a partir de junho de 2026
-  const novosMes = patients.filter(
-    p => p.data_cadastro.startsWith(prefix) && 
-         !p.usuario_cadastro?.includes('Planilha') && 
-         p.data_cadastro >= '2026-06-01'
-  ).length;
+  // Novos do mês: Cadastrados diretamente no site no mês selecionado (a partir de junho de 2026),
+  // ou pacientes que foram modificados no sistema para Ativo ou Novo Cliente neste mês.
+  const novosMes = isBeforeJune2026 ? 0 : patients.filter(p => {
+    const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro.startsWith(prefix) && p.data_cadastro >= '2026-06-01';
+    const isModifiedToActive = p.data_ultima_atualizacao.startsWith(prefix) && 
+                               p.data_ultima_atualizacao !== p.data_cadastro && 
+                               (p.status === 'Ativo' || p.status === 'Novo Cliente');
+    return isNewDirect || isModifiedToActive;
+  }).length;
 
-  const desistentesMes = patients.filter(
-    p => p.status === 'Desistiu' && 
-         p.data_ultima_atualizacao.startsWith(prefix) && 
-         !p.usuario_cadastro?.includes('Planilha') && 
-         p.data_cadastro >= '2026-06-01'
-  ).length;
+  // Desistentes/Inativos do mês (Saídas): Alterações de status para Desistiu ou Inativo no mês selecionado
+  const desistentesMes = isBeforeJune2026 ? 0 : patients.filter(p => {
+    const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
+    const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(prefix);
+    const isSystemScope = !p.usuario_cadastro?.includes('Planilha') || (p.data_ultima_atualizacao !== p.data_cadastro);
+    return isExitStatus && isModifiedThisMonth && isSystemScope;
+  }).length;
 
   // Clientes Cadastrados no Mês / Ano (sistema, não planilha)
   const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
@@ -172,19 +177,29 @@ export const Dashboard: React.FC<{
   // Math calculation for Growth comparing selected month to previous month
   const selectedMonthStart = `${selectedYear}-${selectedMonth}-01`;
 
-  // Base de ativos no mês anterior (apenas do sistema, excluindo planilha)
+  // Base de ativos no mês anterior (apenas do sistema ou modificados no sistema a partir de junho de 2026)
   const activeInPrevMonth = patients.filter(p => {
+    const isSystemScope = (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
+                          (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro);
+    if (!isSystemScope) return false;
+
     const registeredBefore = p.data_cadastro < selectedMonthStart;
-    const isDesistenteBefore = p.status === 'Desistiu' && p.data_ultima_atualizacao < selectedMonthStart;
-    return !p.usuario_cadastro?.includes('Planilha') && registeredBefore && !isDesistenteBefore;
+    const wasInactiveOrDesistiuBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao < selectedMonthStart;
+    
+    return registeredBefore && !wasInactiveOrDesistiuBefore;
   }).length;
 
-  const growthRate = activeInPrevMonth > 0 
-    ? ((novosMes - desistentesMes) / activeInPrevMonth) * 100 
-    : 0;
+  const growthRate = isBeforeJune2026
+    ? 0
+    : activeInPrevMonth > 0 
+      ? ((novosMes - desistentesMes) / activeInPrevMonth) * 100 
+      : 0;
 
-  // Taxa de Retenção: Proporção apenas de pacientes do sistema a partir de junho de 2026
-  const retentionPatients = patients.filter(p => !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01');
+  // Taxa de Retenção: Proporção baseada nos pacientes ativos, novos, desistentes e inativos do sistema
+  const retentionPatients = patients.filter(p => 
+    (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
+    (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro)
+  );
   const totalPatientsRet = retentionPatients.length;
   const activePatientsRet = retentionPatients.filter(p => p.status === 'Ativo').length;
   const newPatientsRet = retentionPatients.filter(p => p.status === 'Novo Cliente').length;

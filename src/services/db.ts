@@ -390,5 +390,49 @@ export const db = {
         `Paciente ${p.nome} (Convênio: ${p.convenio}, Cadastrado em: ${p.data_cadastro}) foi movido automaticamente para "Ativo" devido à virada do mês.`
       );
     }
+  },
+
+  async convertNewToInactive(): Promise<number> {
+    let patients: Paciente[] = [];
+    if (supabase) {
+      const { data, error } = await supabase.from('pacientes').select('*');
+      if (!error && data) patients = data;
+    } else {
+      patients = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
+    }
+
+    const toUpdate = patients.filter(p => p.status === 'Novo Cliente');
+    if (toUpdate.length === 0) return 0;
+
+    let count = 0;
+    if (supabase) {
+      // Execute updates in Supabase
+      for (const p of toUpdate) {
+        const { error } = await supabase
+          .from('pacientes')
+          .update({ status: 'Inativo' })
+          .eq('id', p.id);
+        if (!error) count++;
+      }
+    } else {
+      const allPatients = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
+      allPatients.forEach(p => {
+        if (p.status === 'Novo Cliente') {
+          p.status = 'Inativo';
+          count++;
+        }
+      });
+      setLocal('pacientes', allPatients);
+    }
+
+    if (count > 0) {
+      await this.addLog(
+        'Sistema',
+        'Migração Inicial',
+        `Convertido em massa ${count} pacientes com status "Novo Cliente" para "Inativo" a pedido do administrador.`
+      );
+    }
+
+    return count;
   }
 };

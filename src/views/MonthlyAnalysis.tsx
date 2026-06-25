@@ -82,44 +82,72 @@ export const MonthlyAnalysis: React.FC = () => {
   // CALCULATIONS & STATISTICS FOR FILTERED MONTH
   // ----------------------------------------------------
   const targetPrefix = `${selectedYear}-${selectedMonth}`;
-  const lastDayOfMonthStr = `${selectedYear}-${selectedMonth}-31`;
+  const isBeforeJune2026 = targetPrefix < '2026-06';
+  
   const previousMonthVal = Number(selectedMonth) === 1 ? 12 : Number(selectedMonth) - 1;
   const previousYearVal = Number(selectedMonth) === 1 ? Number(selectedYear) - 1 : Number(selectedYear);
-  const lastDayOfPrevMonthStr = `${previousYearVal}-${String(previousMonthVal).padStart(2, '0')}-31`;
+  const prevMonthPrefix = `${previousYearVal}-${String(previousMonthVal).padStart(2, '0')}`;
 
-  // 1. Novos Pacientes (registered in the selected month)
-  const novosMes = patients.filter(p => p.data_cadastro.startsWith(targetPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-
-  // 2. Pacientes Desistentes (withdrew in the selected month)
-  const desistentesMes = patients.filter(
-    p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(targetPrefix)
-  ).length;
-
-  // 3. Pacientes Ativos no final do mês selecionado
-  // (Registered on or before the end of selected month, and didn't withdraw on or before the end of selected month)
-  const ativosFimMes = patients.filter(p => {
-    const registeredOnOrBefore = p.data_cadastro <= lastDayOfMonthStr;
-    const isDesistenteOnOrBefore = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayOfMonthStr;
-    return registeredOnOrBefore && !isDesistenteOnOrBefore;
+  // 1. Novos Pacientes (registered in the selected month or modified to Active/New in this month)
+  const novosMes = isBeforeJune2026 ? 0 : patients.filter(p => {
+    const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro.startsWith(targetPrefix) && p.data_cadastro >= '2026-06-01';
+    const isModifiedToActive = p.data_ultima_atualizacao.startsWith(targetPrefix) && 
+                               p.data_ultima_atualizacao !== p.data_cadastro && 
+                               (p.status === 'Ativo' || p.status === 'Novo Cliente');
+    return isNewDirect || isModifiedToActive;
   }).length;
 
-  // 4. Pacientes Ativos no final do mês anterior
+  // 2. Pacientes Desistentes (status changed to Desistiu or Inativo in the selected month)
+  const desistentesMes = isBeforeJune2026 ? 0 : patients.filter(p => {
+    const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
+    const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(targetPrefix);
+    const isSystemScope = !p.usuario_cadastro?.includes('Planilha') || (p.data_ultima_atualizacao !== p.data_cadastro);
+    return isExitStatus && isModifiedThisMonth && isSystemScope;
+  }).length;
+
+  // 3. Pacientes Ativos no final do mês selecionado (system scope)
+  const ativosFimMes = patients.filter(p => {
+    const isSystemScope = (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
+                          (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro);
+    return isSystemScope && p.status === 'Ativo';
+  }).length;
+
+  // 4. Pacientes Ativos no final do mês anterior (system scope)
   const ativosFimMesAnterior = patients.filter(p => {
-    const registeredOnOrBefore = p.data_cadastro <= lastDayOfPrevMonthStr;
-    const isDesistenteOnOrBefore = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayOfPrevMonthStr;
-    return registeredOnOrBefore && !isDesistenteOnOrBefore;
+    const isSystemScope = (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
+                          (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro);
+    if (!isSystemScope) return false;
+
+    const registeredBefore = p.data_cadastro <= `${prevMonthPrefix}-31`;
+    const wasInactiveOrDesistiuBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao <= `${prevMonthPrefix}-31`;
+    return registeredBefore && !wasInactiveOrDesistiuBefore;
   }).length;
 
   // 5. Crescimento Percentual: ((Novos - Desistentes) / Ativos Mês Anterior) * 100
-  const crescimentoPercentual = ativosFimMesAnterior > 0 
-    ? ((novosMes - desistentesMes) / ativosFimMesAnterior) * 100 
-    : 0;
+  const crescimentoPercentual = isBeforeJune2026
+    ? 0
+    : ativosFimMesAnterior > 0 
+      ? ((novosMes - desistentesMes) / ativosFimMesAnterior) * 100 
+      : 0;
 
-  // 6. Retenção Percentual: (Ativos Fim Mês / (Ativos Fim Mês + Desistentes Mês)) * 100
-  const totalFimMes = ativosFimMes + desistentesMes;
-  const retencaoPercentual = totalFimMes > 0 
-    ? (ativosFimMes / totalFimMes) * 100 
+  // 6. Retenção Percentual: Baseada em todos os pacientes do sistema desde junho
+  const retentionPatients = patients.filter(p => 
+    (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
+    (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro)
+  );
+  const totalPatientsRet = retentionPatients.length;
+  const activePatientsRet = retentionPatients.filter(p => p.status === 'Ativo').length;
+  const newPatientsRet = retentionPatients.filter(p => p.status === 'Novo Cliente').length;
+  const activeAndNewRet = activePatientsRet + newPatientsRet;
+  const retencaoPercentual = totalPatientsRet > 0 
+    ? (activeAndNewRet / totalPatientsRet) * 100 
     : 100;
+
+  const inativosFimMes = patients.filter(p => {
+    const isSystemScope = (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
+                          (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro);
+    return isSystemScope && p.status === 'Inativo';
+  }).length;
 
   // ----------------------------------------------------
   // CHART 1: STATUS DISTRIBUTION FOR FILTERED MONTH
@@ -127,6 +155,7 @@ export const MonthlyAnalysis: React.FC = () => {
   const statusPieData = [
     { name: 'Ativos', value: ativosFimMes, color: '#059669' },
     { name: 'Novos no Mês', value: novosMes, color: '#94A3B8' },
+    { name: 'Inativos', value: inativosFimMes, color: '#F59E0B' },
     { name: 'Desistências no Mês', value: desistentesMes, color: '#EF4444' }
   ];
 

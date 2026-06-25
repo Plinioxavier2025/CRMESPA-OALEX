@@ -34,7 +34,18 @@ function App() {
       try {
         const u = JSON.parse(savedSession);
         setUser(u);
-        db.autoTransitionPatients().catch(console.error);
+        const runUpdates = async () => {
+          try {
+            await db.autoTransitionPatients();
+            const count = await db.convertNewToInactive();
+            if (count > 0) {
+              window.location.reload();
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        };
+        runUpdates();
       } catch (e) {
         localStorage.removeItem('crm_alex_session');
       }
@@ -45,7 +56,18 @@ function App() {
   const handleLoginSuccess = (userData: Omit<Usuario, 'senha'>) => {
     setUser(userData);
     localStorage.setItem('crm_alex_session', JSON.stringify(userData));
-    db.autoTransitionPatients().catch(console.error);
+    const runUpdates = async () => {
+      try {
+        await db.autoTransitionPatients();
+        const count = await db.convertNewToInactive();
+        if (count > 0) {
+          window.location.reload();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    runUpdates();
   };
 
   const handleLogout = async () => {
