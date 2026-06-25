@@ -192,23 +192,24 @@ export const db = {
     }
 
     // Normalizar convênios descritos como "SulAmérica" ou similar para "Convenio"
-    let hasNormalizations = false;
+    const idsToNormalize: string[] = [];
     data = data.map(p => {
       const convNorm = (p.convenio || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
       if (convNorm === 'sulamerica' || convNorm === 'sulamericaseguros') {
-        hasNormalizations = true;
-        if (supabase) {
-          supabase.from('pacientes').update({ convenio: 'Convenio' }).eq('id', p.id).then(({ error }) => {
-            if (error) console.error(`Erro ao normalizar convênio do paciente ${p.nome}:`, error);
-          });
-        }
+        idsToNormalize.push(p.id);
         return { ...p, convenio: 'Convenio' };
       }
       return p;
     });
 
-    if (hasNormalizations && !supabase) {
-      localStorage.setItem('crm_alex_pacientes', JSON.stringify(data));
+    if (idsToNormalize.length > 0) {
+      if (supabase) {
+        supabase.from('pacientes').update({ convenio: 'Convenio' }).in('id', idsToNormalize).then(({ error }) => {
+          if (error) console.error("Erro ao normalizar convênios em lote:", error);
+        });
+      } else {
+        localStorage.setItem('crm_alex_pacientes', JSON.stringify(data));
+      }
     }
 
     // Deduplicar em tempo de execução
