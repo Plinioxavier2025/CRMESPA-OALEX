@@ -148,30 +148,47 @@ export const Dashboard: React.FC<{
 
 
   const prefix = `${selectedYear}-${selectedMonth}`;
-  const novosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-  const desistentesMes = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(prefix)).length;
+  
+  // Apenas clientes novos cadastrados pelo sistema (não planilha) a partir de junho de 2026
+  const novosMes = patients.filter(
+    p => p.data_cadastro.startsWith(prefix) && 
+         !p.usuario_cadastro?.includes('Planilha') && 
+         p.data_cadastro >= '2026-06-01'
+  ).length;
 
-  // Clientes Cadastrados no Mês / Ano
+  const desistentesMes = patients.filter(
+    p => p.status === 'Desistiu' && 
+         p.data_ultima_atualizacao.startsWith(prefix) && 
+         !p.usuario_cadastro?.includes('Planilha') && 
+         p.data_cadastro >= '2026-06-01'
+  ).length;
+
+  // Clientes Cadastrados no Mês / Ano (sistema, não planilha)
   const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
   const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(selectedYear) && !p.usuario_cadastro?.includes('Planilha')).length;
 
   // Math calculation for Growth comparing selected month to previous month
   const selectedMonthStart = `${selectedYear}-${selectedMonth}-01`;
 
+  // Base de ativos no mês anterior (apenas do sistema, excluindo planilha)
   const activeInPrevMonth = patients.filter(p => {
     const registeredBefore = p.data_cadastro < selectedMonthStart;
     const isDesistenteBefore = p.status === 'Desistiu' && p.data_ultima_atualizacao < selectedMonthStart;
-    return registeredBefore && !isDesistenteBefore;
+    return !p.usuario_cadastro?.includes('Planilha') && registeredBefore && !isDesistenteBefore;
   }).length;
 
   const growthRate = activeInPrevMonth > 0 
     ? ((novosMes - desistentesMes) / activeInPrevMonth) * 100 
     : 0;
 
-  // Retention Rate: (Active + New) / Total Patients * 100
-  const activeAndNew = activePatients + newPatients;
-  const retentionRate = totalPatients > 0 
-    ? (activeAndNew / totalPatients) * 100 
+  // Taxa de Retenção: Proporção apenas de pacientes do sistema a partir de junho de 2026
+  const retentionPatients = patients.filter(p => !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01');
+  const totalPatientsRet = retentionPatients.length;
+  const activePatientsRet = retentionPatients.filter(p => p.status === 'Ativo').length;
+  const newPatientsRet = retentionPatients.filter(p => p.status === 'Novo Cliente').length;
+  const activeAndNewRet = activePatientsRet + newPatientsRet;
+  const retentionRate = totalPatientsRet > 0 
+    ? (activeAndNewRet / totalPatientsRet) * 100 
     : 100;
 
   // ----------------------------------------------------
