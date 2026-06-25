@@ -174,22 +174,37 @@ export const Dashboard: React.FC<{
   const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
   const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(selectedYear) && !p.usuario_cadastro?.includes('Planilha')).length;
 
-  // Math calculation for Growth comparing selected month to previous month
-  const selectedMonthStart = `${selectedYear}-${selectedMonth}-01`;
-
-  // Base de ativos no mês anterior (incluindo planilha para representar a base real de comparação)
-  const activeInPrevMonth = patients.filter(p => {
-    const registeredBefore = p.data_cadastro < selectedMonthStart;
-    const wasInactiveOrDesistiuBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao < selectedMonthStart;
-    
-    return registeredBefore && !wasInactiveOrDesistiuBefore;
+  // Math calculation for Growth (Proportion of active patients in the selected month)
+  const lastDayOfMonthStr = `${selectedYear}-${selectedMonth}-31`; // generic cutoff
+  const totalAtSelectedMonth = patients.filter(p => p.data_cadastro <= lastDayOfMonthStr).length;
+  const activeAtSelectedMonth = patients.filter(p => {
+    const registeredOnOrBefore = p.data_cadastro <= lastDayOfMonthStr;
+    const wasInactiveOrDesistiuOnOrBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao <= lastDayOfMonthStr;
+    return registeredOnOrBefore && !wasInactiveOrDesistiuOnOrBefore;
   }).length;
 
-  const growthRate = isBeforeJune2026
-    ? 0
-    : activeInPrevMonth > 0 
-      ? ((novosMes - desistentesMes) / activeInPrevMonth) * 100 
-      : 0;
+  const growthRate = totalAtSelectedMonth > 0 
+    ? (activeAtSelectedMonth / totalAtSelectedMonth) * 100 
+    : 0;
+
+  // Growth rate for the previous month to show variation
+  const previousMonthVal = Number(selectedMonth) === 1 ? 12 : Number(selectedMonth) - 1;
+  const previousYearVal = Number(selectedMonth) === 1 ? Number(selectedYear) - 1 : Number(selectedYear);
+  const prevMonthPrefix = `${previousYearVal}-${String(previousMonthVal).padStart(2, '0')}`;
+  const lastDayOfPrevMonthStr = `${prevMonthPrefix}-31`;
+
+  const totalAtPrevMonth = patients.filter(p => p.data_cadastro <= lastDayOfPrevMonthStr).length;
+  const activeAtPrevMonth = patients.filter(p => {
+    const registeredOnOrBefore = p.data_cadastro <= lastDayOfPrevMonthStr;
+    const wasInactiveOrDesistiuOnOrBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao <= lastDayOfPrevMonthStr;
+    return registeredOnOrBefore && !wasInactiveOrDesistiuOnOrBefore;
+  }).length;
+
+  const growthRatePrev = totalAtPrevMonth > 0 
+    ? (activeAtPrevMonth / totalAtPrevMonth) * 100 
+    : 0;
+
+  const diffFromPrevMonth = growthRate - growthRatePrev;
 
   // Taxa de Retenção: Proporção baseada nos pacientes ativos, novos, desistentes e inativos do sistema
   const retentionPatients = patients.filter(p => 
@@ -478,9 +493,14 @@ export const Dashboard: React.FC<{
           <div>
             <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Crescimento Mensal</span>
             <strong className="text-2xl font-bold text-brand-blue-dark font-outfit block mt-0.5 group-hover:text-purple-650 transition-colors">
-              {growthRate >= 0 ? '+' : ''}{growthRate.toFixed(1)}%
+              {growthRate.toFixed(1)}%
             </strong>
-            <span className="text-[10px] text-slate-400 mt-1 block">Relação entries x saídas</span>
+            <span className="text-[10px] text-slate-400 mt-1 block">
+              {totalAtPrevMonth > 0 
+                ? `${diffFromPrevMonth >= 0 ? '+' : ''}${diffFromPrevMonth.toFixed(1)}% vs mês anterior`
+                : 'Proporção de ativos sobre o total'
+              }
+            </span>
           </div>
         </div>
 

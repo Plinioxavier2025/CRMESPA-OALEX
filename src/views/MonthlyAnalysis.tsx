@@ -113,18 +113,32 @@ export const MonthlyAnalysis: React.FC = () => {
   }).length;
 
   // 4. Pacientes Ativos no final do mês anterior (incluindo planilha para representar a base real de comparação)
-  const ativosFimMesAnterior = patients.filter(p => {
-    const registeredBefore = p.data_cadastro <= `${prevMonthPrefix}-31`;
-    const wasInactiveOrDesistiuBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao <= `${prevMonthPrefix}-31`;
-    return registeredBefore && !wasInactiveOrDesistiuBefore;
+  const lastDayOfPrevMonthStr = `${prevMonthPrefix}-31`;
+  const totalAtPrevMonth = patients.filter(p => p.data_cadastro <= lastDayOfPrevMonthStr).length;
+  const activeAtPrevMonth = patients.filter(p => {
+    const registeredOnOrBefore = p.data_cadastro <= lastDayOfPrevMonthStr;
+    const wasInactiveOrDesistiuOnOrBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao <= lastDayOfPrevMonthStr;
+    return registeredOnOrBefore && !wasInactiveOrDesistiuOnOrBefore;
   }).length;
 
-  // 5. Crescimento Percentual: ((Novos - Desistentes) / Ativos Mês Anterior) * 100
-  const crescimentoPercentual = isBeforeJune2026
-    ? 0
-    : ativosFimMesAnterior > 0 
-      ? ((novosMes - desistentesMes) / ativosFimMesAnterior) * 100 
-      : 0;
+  const crescimentoPercentualPrev = totalAtPrevMonth > 0 
+    ? (activeAtPrevMonth / totalAtPrevMonth) * 100 
+    : 0;
+
+  // 5. Crescimento Percentual: Proporção de ativos sobre o total no mês selecionado
+  const lastDayOfMonthStr = `${selectedYear}-${selectedMonth}-31`; // generic cutoff
+  const totalAtSelectedMonth = patients.filter(p => p.data_cadastro <= lastDayOfMonthStr).length;
+  const activeAtSelectedMonth = patients.filter(p => {
+    const registeredOnOrBefore = p.data_cadastro <= lastDayOfMonthStr;
+    const wasInactiveOrDesistiuOnOrBefore = (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao <= lastDayOfMonthStr;
+    return registeredOnOrBefore && !wasInactiveOrDesistiuOnOrBefore;
+  }).length;
+
+  const crescimentoPercentual = totalAtSelectedMonth > 0 
+    ? (activeAtSelectedMonth / totalAtSelectedMonth) * 100 
+    : 0;
+
+  const diffFromPrevMonth = crescimentoPercentual - crescimentoPercentualPrev;
 
   // 6. Retenção Percentual: Baseada em todos os pacientes do sistema desde junho
   const retentionPatients = patients.filter(p => 
@@ -344,17 +358,24 @@ export const MonthlyAnalysis: React.FC = () => {
 
         {/* Crescimento % */}
         <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-          <div className={`p-2 rounded-lg ${crescimentoPercentual >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+          <div className={`p-2 rounded-lg ${totalAtPrevMonth > 0 ? (diffFromPrevMonth >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600') : 'bg-purple-50 text-purple-600'}`}>
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
             <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Crescimento</span>
             <strong className="text-lg font-bold text-slate-700 mt-0.5 flex items-center gap-0.5">
-              <span>{crescimentoPercentual >= 0 ? '+' : ''}{crescimentoPercentual.toFixed(1)}%</span>
-              {crescimentoPercentual >= 0 
-                ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" />
-                : <ArrowDownRight className="w-3.5 h-3.5 text-red-500" />
-              }
+              <span>{crescimentoPercentual.toFixed(1)}%</span>
+              {totalAtPrevMonth > 0 && (
+                <>
+                  {diffFromPrevMonth >= 0 
+                    ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" />
+                    : <ArrowDownRight className="w-3.5 h-3.5 text-red-500" />
+                  }
+                  <span className={`text-[10px] ml-0.5 ${diffFromPrevMonth >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                    ({diffFromPrevMonth >= 0 ? '+' : ''}{diffFromPrevMonth.toFixed(1)}%)
+                  </span>
+                </>
+              )}
             </strong>
           </div>
         </div>
