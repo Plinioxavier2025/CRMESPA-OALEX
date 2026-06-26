@@ -80,57 +80,22 @@ export const Reports: React.FC = () => {
     const targetPrefix = `2026-${m.num}`;
     const lastDayCutoff = `2026-${m.num}-31`;
 
-    let entries = 0;
-    let exits = 0;
-    let activeAtMonth = 0;
+    const entries = patients.filter(p => 
+      p.data_cadastro.startsWith(targetPrefix) && 
+      !p.usuario_cadastro?.includes('Planilha')
+    ).length;
 
-    if (m.num === '06') {
-      const juneInativos = patients.filter(p => 
-        p.status === 'Inativo' && 
-        p.data_ultima_atualizacao.startsWith('2026-06')
-      ).length;
-      const juneDesistencias = patients.filter(p => 
-        p.status === 'Desistiu' && 
-        p.data_ultima_atualizacao.startsWith('2026-06')
-      ).length;
+    const exits = patients.filter(p => 
+      (p.status === 'Desistiu' || p.status === 'Inativo') && 
+      p.data_ultima_atualizacao.startsWith(targetPrefix)
+    ).length;
 
-      entries = 24;
-      exits = juneDesistencias + juneInativos;
-      activeAtMonth = 24 - exits;
-    } else if (m.num > '06') {
-      entries = patients.filter(p => p.data_cadastro.startsWith(targetPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-      exits = patients.filter(p => (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao.startsWith(targetPrefix)).length;
-
-      const juneInativos = patients.filter(p => 
-        p.status === 'Inativo' && 
-        p.data_ultima_atualizacao.startsWith('2026-06')
-      ).length;
-      const juneDesistencias = patients.filter(p => 
-        p.status === 'Desistiu' && 
-        p.data_ultima_atualizacao.startsWith('2026-06')
-      ).length;
-
-      const baseActive = 24 - juneDesistencias - juneInativos;
-      const postJuneEntries = patients.filter(p => 
-        p.data_cadastro > '2026-06-30' && 
-        p.data_cadastro <= lastDayCutoff &&
-        !p.usuario_cadastro?.includes('Planilha')
-      ).length;
-
-      const postJuneExits = patients.filter(p => 
-        p.status === 'Desistiu' && 
-        p.data_ultima_atualizacao > '2026-06-30' && 
-        p.data_ultima_atualizacao <= lastDayCutoff
-      ).length;
-
-      const postJuneInactives = patients.filter(p => 
-        p.status === 'Inativo' && 
-        p.data_ultima_atualizacao > '2026-06-30' && 
-        p.data_ultima_atualizacao <= lastDayCutoff
-      ).length;
-
-      activeAtMonth = baseActive + postJuneEntries - postJuneExits - postJuneInactives;
-    } // Se for anterior a Junho de 2026: entries = 0, exits = 0, activeAtMonth = 0
+    const activeAtMonth = patients.filter(p => {
+      const registered = p.data_cadastro <= lastDayCutoff;
+      const isDesistenteAtCutoff = p.status === 'Desistiu' && p.data_ultima_atualizacao <= lastDayCutoff;
+      const isInativoAtCutoff = p.status === 'Inativo' && p.data_ultima_atualizacao <= lastDayCutoff;
+      return registered && !isDesistenteAtCutoff && !isInativoAtCutoff;
+    }).length;
 
     const netGrowth = entries - exits;
     const totalPeriod = activeAtMonth + exits;

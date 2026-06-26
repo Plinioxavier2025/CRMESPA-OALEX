@@ -75,49 +75,17 @@ export const NewPatientsHistory: React.FC = () => {
   const monthlyData = monthsList.map(month => {
     const yearMonthPrefix = `${selectedYear}-${month.value}`;
     
-    let entries = 0;
-    let exits = 0;
+    // Entradas (registrados naquele mês, não importados da planilha original)
+    const entries = patients.filter(p => 
+      p.data_cadastro.startsWith(yearMonthPrefix) && 
+      !p.usuario_cadastro?.includes('Planilha')
+    ).length;
 
-    if (selectedYear === '2026') {
-      if (month.value === '06') {
-        const juneInativos = patients.filter(p => 
-          p.status === 'Inativo' && 
-          p.data_ultima_atualizacao.startsWith('2026-06')
-        ).length;
-        const juneDesistencias = patients.filter(p => 
-          p.status === 'Desistiu' && 
-          p.data_ultima_atualizacao.startsWith('2026-06')
-        ).length;
-
-        entries = 24;
-        exits = juneDesistencias + juneInativos;
-      } else if (month.value > '06') {
-        // Entradas (registered in that month, not imported)
-        entries = patients.filter(p => 
-          p.data_cadastro.startsWith(yearMonthPrefix) && 
-          !p.usuario_cadastro?.includes('Planilha')
-        ).length;
-
-        // Saídas (marked as Desistiu ou Inativo, com data de atualização naquele mês)
-        exits = patients.filter(p => 
-          (p.status === 'Desistiu' || p.status === 'Inativo') && 
-          p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
-        ).length;
-      }
-      // Se for anterior a Junho de 2026, entradas e saídas permanecem 0
-    } else if (Number(selectedYear) > 2026) {
-      // Entradas (registered in that month, not imported)
-      entries = patients.filter(p => 
-        p.data_cadastro.startsWith(yearMonthPrefix) && 
-        !p.usuario_cadastro?.includes('Planilha')
-      ).length;
-
-      // Saídas (marked as Desistiu ou Inativo, com data de atualização naquele mês)
-      exits = patients.filter(p => 
-        (p.status === 'Desistiu' || p.status === 'Inativo') && 
-        p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
-      ).length;
-    }
+    // Saídas (marcados como Desistiu ou Inativo, com data de atualização naquele mês)
+    const exits = patients.filter(p => 
+      (p.status === 'Desistiu' || p.status === 'Inativo') && 
+      p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
+    ).length;
     // Se for anterior a 2026, entradas e saídas permanecem 0
 
     const balance = entries - exits;
