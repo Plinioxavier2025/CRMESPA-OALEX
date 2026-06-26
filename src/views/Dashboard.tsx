@@ -289,13 +289,31 @@ export const Dashboard: React.FC<{
 
     if (selectedYear === '2026') {
       if (monthNum === '06') {
-        activeCount = 21;
-        desistenteCount = 3;
-        inativoCount = 0;
+        const juneInativos = patients.filter(p => 
+          p.status === 'Inativo' && 
+          p.data_ultima_atualizacao.startsWith('2026-06')
+        ).length;
+        const juneDesistencias = patients.filter(p => 
+          p.status === 'Desistiu' && 
+          p.data_ultima_atualizacao.startsWith('2026-06')
+        ).length;
+
+        activeCount = 24 - juneDesistencias - juneInativos;
+        desistenteCount = juneDesistencias;
+        inativoCount = juneInativos;
       } else if (monthNum > '06') {
-        const baseActive = 21;
-        const baseDesistente = 3;
-        const baseInativo = 0;
+        const juneInativos = patients.filter(p => 
+          p.status === 'Inativo' && 
+          p.data_ultima_atualizacao.startsWith('2026-06')
+        ).length;
+        const juneDesistencias = patients.filter(p => 
+          p.status === 'Desistiu' && 
+          p.data_ultima_atualizacao.startsWith('2026-06')
+        ).length;
+
+        const baseActive = 24 - juneDesistencias - juneInativos;
+        const baseDesistente = juneDesistencias;
+        const baseInativo = juneInativos;
 
         const postJuneEntries = patients.filter(p => 
           p.data_cadastro > '2026-06-30' && 
@@ -320,9 +338,18 @@ export const Dashboard: React.FC<{
         inativoCount = baseInativo + postJuneInativos;
       }
     } else if (Number(selectedYear) > 2026) {
-      const baseActive = 21;
-      const baseDesistente = 3;
-      const baseInativo = 0;
+      const juneInativos = patients.filter(p => 
+        p.status === 'Inativo' && 
+        p.data_ultima_atualizacao.startsWith('2026-06')
+      ).length;
+      const juneDesistencias = patients.filter(p => 
+        p.status === 'Desistiu' && 
+        p.data_ultima_atualizacao.startsWith('2026-06')
+      ).length;
+
+      const baseActive = 24 - juneDesistencias - juneInativos;
+      const baseDesistente = juneDesistencias;
+      const baseInativo = juneInativos;
 
       const postJuneEntries = patients.filter(p => 
         p.data_cadastro > '2026-06-30' && 

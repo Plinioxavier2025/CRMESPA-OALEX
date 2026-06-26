@@ -85,14 +85,32 @@ export const Reports: React.FC = () => {
     let activeAtMonth = 0;
 
     if (m.num === '06') {
+      const juneInativos = patients.filter(p => 
+        p.status === 'Inativo' && 
+        p.data_ultima_atualizacao.startsWith('2026-06')
+      ).length;
+      const juneDesistencias = patients.filter(p => 
+        p.status === 'Desistiu' && 
+        p.data_ultima_atualizacao.startsWith('2026-06')
+      ).length;
+
       entries = 24;
-      exits = 3;
-      activeAtMonth = 21;
+      exits = juneDesistencias + juneInativos;
+      activeAtMonth = 24 - exits;
     } else if (m.num > '06') {
       entries = patients.filter(p => p.data_cadastro.startsWith(targetPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-      exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(targetPrefix)).length;
+      exits = patients.filter(p => (p.status === 'Desistiu' || p.status === 'Inativo') && p.data_ultima_atualizacao.startsWith(targetPrefix)).length;
 
-      const baseActive = 21;
+      const juneInativos = patients.filter(p => 
+        p.status === 'Inativo' && 
+        p.data_ultima_atualizacao.startsWith('2026-06')
+      ).length;
+      const juneDesistencias = patients.filter(p => 
+        p.status === 'Desistiu' && 
+        p.data_ultima_atualizacao.startsWith('2026-06')
+      ).length;
+
+      const baseActive = 24 - juneDesistencias - juneInativos;
       const postJuneEntries = patients.filter(p => 
         p.data_cadastro > '2026-06-30' && 
         p.data_cadastro <= lastDayCutoff &&

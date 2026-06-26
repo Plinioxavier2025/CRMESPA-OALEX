@@ -37,10 +37,10 @@ function App() {
         const runUpdates = async () => {
           try {
             await db.autoTransitionPatients();
-            const count = await db.convertNewToInactive();
-            if (count > 0) {
-              window.location.reload();
-            }
+            // const count = await db.convertNewToInactive();
+            // if (count > 0) {
+            //   window.location.reload();
+            // }
           } catch (err) {
             console.error(err);
           }
@@ -59,10 +59,10 @@ function App() {
     const runUpdates = async () => {
       try {
         await db.autoTransitionPatients();
-        const count = await db.convertNewToInactive();
-        if (count > 0) {
-          window.location.reload();
-        }
+        // const count = await db.convertNewToInactive();
+        // if (count > 0) {
+        //   window.location.reload();
+        // }
       } catch (err) {
         console.error(err);
       }

@@ -181,12 +181,32 @@ export const db = {
   async getPacientes(): Promise<Paciente[]> {
     let data: Paciente[] = [];
     if (supabase) {
-      const { data: sbData, error } = await supabase.from('pacientes').select('*').order('nome', { ascending: true });
-      if (error) {
-        console.error("Erro ao buscar pacientes no Supabase:", error);
-        throw error;
+      let hasMore = true;
+      let offset = 0;
+      const batchSize = 1000;
+      
+      while (hasMore) {
+        const { data: sbData, error } = await supabase
+          .from('pacientes')
+          .select('*')
+          .order('nome', { ascending: true })
+          .range(offset, offset + batchSize - 1);
+          
+        if (error) {
+          console.error("Erro ao buscar pacientes no Supabase:", error);
+          throw error;
+        }
+        
+        if (sbData && sbData.length > 0) {
+          data = [...data, ...sbData];
+          offset += batchSize;
+          if (sbData.length < batchSize) {
+            hasMore = false;
+          }
+        } else {
+          hasMore = false;
+        }
       }
-      data = sbData || [];
     } else {
       data = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
     }
@@ -274,7 +294,11 @@ export const db = {
           data_ultima_atualizacao: normalizedPaciente.data_ultima_atualizacao || todayStr,
           hora_ultima_atualizacao: normalizedPaciente.hora_ultima_atualizacao || timeStr
         };
-        const { data } = await supabase.from('pacientes').update(updateObj).eq('id', normalizedPaciente.id).select().single();
+        const { data, error } = await supabase.from('pacientes').update(updateObj).eq('id', normalizedPaciente.id).select().single();
+        if (error) {
+          console.error("Erro ao atualizar paciente no Supabase:", error);
+          throw error;
+        }
         return data;
       } else {
         // Insert
@@ -285,7 +309,11 @@ export const db = {
           data_ultima_atualizacao: normalizedPaciente.data_ultima_atualizacao || todayStr,
           hora_ultima_atualizacao: normalizedPaciente.hora_ultima_atualizacao || timeStr
         };
-        const { data } = await supabase.from('pacientes').insert([insertObj]).select().single();
+        const { data, error } = await supabase.from('pacientes').insert([insertObj]).select().single();
+        if (error) {
+          console.error("Erro ao inserir paciente no Supabase:", error);
+          throw error;
+        }
         return data;
       }
     }
@@ -427,11 +455,11 @@ export const db = {
 
   async convertNewToInactive(): Promise<number> {
     let patients: Paciente[] = [];
-    if (supabase) {
-      const { data, error } = await supabase.from('pacientes').select('*');
-      if (!error && data) patients = data;
-    } else {
-      patients = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
+    try {
+      patients = await this.getPacientes();
+    } catch (e) {
+      console.error(e);
+      return 0;
     }
 
     const toUpdate = patients.filter(p => p.status === 'Novo Cliente');

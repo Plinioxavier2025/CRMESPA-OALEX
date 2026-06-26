@@ -80,8 +80,17 @@ export const NewPatientsHistory: React.FC = () => {
 
     if (selectedYear === '2026') {
       if (month.value === '06') {
+        const juneInativos = patients.filter(p => 
+          p.status === 'Inativo' && 
+          p.data_ultima_atualizacao.startsWith('2026-06')
+        ).length;
+        const juneDesistencias = patients.filter(p => 
+          p.status === 'Desistiu' && 
+          p.data_ultima_atualizacao.startsWith('2026-06')
+        ).length;
+
         entries = 24;
-        exits = 3;
+        exits = juneDesistencias + juneInativos;
       } else if (month.value > '06') {
         // Entradas (registered in that month, not imported)
         entries = patients.filter(p => 
@@ -89,9 +98,9 @@ export const NewPatientsHistory: React.FC = () => {
           !p.usuario_cadastro?.includes('Planilha')
         ).length;
 
-        // Saídas (marked as Desistiu, with date of update in that month)
+        // Saídas (marked as Desistiu ou Inativo, com data de atualização naquele mês)
         exits = patients.filter(p => 
-          p.status === 'Desistiu' && 
+          (p.status === 'Desistiu' || p.status === 'Inativo') && 
           p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
         ).length;
       }
@@ -103,9 +112,9 @@ export const NewPatientsHistory: React.FC = () => {
         !p.usuario_cadastro?.includes('Planilha')
       ).length;
 
-      // Saídas (marked as Desistiu, with date of update in that month)
+      // Saídas (marked as Desistiu ou Inativo, com data de atualização naquele mês)
       exits = patients.filter(p => 
-        p.status === 'Desistiu' && 
+        (p.status === 'Desistiu' || p.status === 'Inativo') && 
         p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
       ).length;
     }
