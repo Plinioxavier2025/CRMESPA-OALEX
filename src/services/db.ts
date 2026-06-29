@@ -149,11 +149,20 @@ export const db = {
 
   async saveUsuario(usuario: Omit<Usuario, 'id'> & { id?: string }): Promise<Usuario> {
     if (supabase) {
+      const { senha, ...payloadWithoutSenha } = usuario as any;
       if (usuario.id) {
-        const { data } = await supabase.from('usuarios').update(usuario).eq('id', usuario.id).select().single();
+        const { data, error } = await supabase.from('usuarios').update(payloadWithoutSenha).eq('id', usuario.id).select().single();
+        if (error) {
+          console.error("Erro ao atualizar usuário no Supabase:", error);
+          throw error;
+        }
         return data;
       } else {
-        const { data } = await supabase.from('usuarios').insert([usuario]).select().single();
+        const { data, error } = await supabase.from('usuarios').insert([payloadWithoutSenha]).select().single();
+        if (error) {
+          console.error("Erro ao inserir usuário no Supabase:", error);
+          throw error;
+        }
         return data;
       }
     }

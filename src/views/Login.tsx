@@ -17,16 +17,45 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const isCloud = db.isSupabaseMode();
   const [logoFailed, setLogoFailed] = useState(false);
 
+  const mapAuthError = (message: string): string => {
+    const mensagens: { [key: string]: string } = {
+      'Invalid login credentials': 'E-mail ou senha incorretos.',
+      'Email not confirmed': 'Confirme seu e-mail antes de acessar.',
+      'Too many requests': 'Muitas tentativas. Aguarde alguns minutos.',
+      'Invalid email': 'E-mail inválido.',
+    };
+    
+    for (const key of Object.keys(mensagens)) {
+      if (message.toLowerCase().includes(key.toLowerCase())) {
+        return mensagens[key];
+      }
+    }
+    
+    return 'Erro ao fazer login. Tente novamente.';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
-    if (!email.trim() || !password) {
-      setError('Por favor, preencha todos os campos.');
-      setLoading(false);
+    // Client-side validations
+    if (!email.trim()) {
+      setError('Informe seu e-mail');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError('E-mail inválido');
+      return;
+    }
+
+    if (!password) {
+      setError('Informe sua senha');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       if (supabase) {
@@ -75,8 +104,9 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         
         await db.addLog(foundUser.nome, 'Login no sistema', 'Autenticação bem-sucedida em banco local simulado.');
       }
-    } catch (e: any) {
-      setError(e.message || 'Falha na autenticação. Verifique os dados e tente novamente.');
+    } catch (e) {
+      const error = e as Error;
+      setError(mapAuthError(error.message || ''));
     } finally {
       setLoading(false);
     }

@@ -18,16 +18,29 @@ CREATE TABLE IF NOT EXISTS usuarios (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    senha TEXT NOT NULL, -- Stored hashed password (or fallback credentials)
     perfil VARCHAR(50) DEFAULT 'admin',
     criado_em TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Helper function to check if the current user is an admin (avoids recursion loop)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.usuarios
+    WHERE id = auth.uid() AND perfil = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Enable RLS for usuarios
 ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY usuarios_public_read ON usuarios FOR SELECT USING (true);
-CREATE POLICY usuarios_admin_all ON usuarios FOR ALL TO authenticated USING (true);
+CREATE POLICY usuarios_leitura_propria ON usuarios FOR SELECT USING (auth.uid() = id);
+CREATE POLICY usuarios_admin_select ON usuarios FOR SELECT USING (public.is_admin());
+CREATE POLICY usuarios_admin_insert ON usuarios FOR INSERT TO authenticated WITH CHECK (public.is_admin());
+CREATE POLICY usuarios_admin_update ON usuarios FOR UPDATE TO authenticated USING (public.is_admin() OR auth.uid() = id) WITH CHECK (public.is_admin() OR auth.uid() = id);
+CREATE POLICY usuarios_admin_delete ON usuarios FOR DELETE TO authenticated USING (public.is_admin());
 
 -- 2. TABLE: pacientes (Patients)
 CREATE TABLE IF NOT EXISTS pacientes (
@@ -62,7 +75,6 @@ CREATE TABLE IF NOT EXISTS configuracoes (
 -- Enable RLS for configuracoes
 ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY configuracoes_public_read ON configuracoes FOR SELECT USING (true);
 CREATE POLICY configuracoes_authenticated_all ON configuracoes FOR ALL TO authenticated USING (true);
 
 -- 4. TABLE: logs (Audit trail)
@@ -77,7 +89,6 @@ CREATE TABLE IF NOT EXISTS logs (
 -- Enable RLS for logs
 ALTER TABLE logs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY logs_public_read ON logs FOR SELECT USING (true);
 CREATE POLICY logs_authenticated_all ON logs FOR ALL TO authenticated USING (true);
 
 -- Indexes for performance
@@ -98,12 +109,11 @@ ON CONFLICT (chave) DO NOTHING;
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.usuarios (id, nome, email, senha, perfil)
+  INSERT INTO public.usuarios (id, nome, email, perfil)
   VALUES (
     new.id,
     COALESCE(new.raw_user_meta_data->>'nome', split_part(new.email, '@', 1)),
     new.email,
-    'supabase_auth', -- placeholder password (authentication is handled by Supabase Auth)
     'admin'
   )
   ON CONFLICT (email) DO UPDATE 

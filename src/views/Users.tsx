@@ -54,14 +54,16 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
     e.preventDefault();
     setFeedback('');
 
-    if (!nome.trim() || !email.trim() || !senha) {
+    const isCloud = db.isSupabaseMode();
+    const needsPassword = !isCloud || isCreating;
+
+    if (!nome.trim() || !email.trim() || (needsPassword && !senha)) {
       setFeedback('Todos os campos são obrigatórios.');
       return;
     }
 
     try {
       if (isCreating) {
-        const isCloud = db.isSupabaseMode();
         if (isCloud && senha.length < 6) {
           setFeedback('No modo nuvem (Supabase), a senha deve possuir pelo menos 6 caracteres.');
           return;
@@ -126,13 +128,16 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
         loadUsers();
       } else if (editingUser) {
         // Edit mode
-        const payload = {
+        const payload: Omit<Usuario, 'id'> & { id?: string; senha?: string } = {
           id: editingUser.id,
           nome: nome.trim(),
           email: email.trim(),
-          senha: senha,
           perfil: 'admin' as const
         };
+
+        if (!isCloud) {
+          payload.senha = senha;
+        }
 
         await db.saveUsuario(payload);
         await db.addLog(
@@ -147,9 +152,10 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
       }
       
       setTimeout(() => setFeedback(''), 4000);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setFeedback(err.message || 'Erro ao salvar os dados do usuário.');
+      const error = err as Error;
+      setFeedback(error.message || 'Erro ao salvar os dados do usuário.');
     }
   };
 
@@ -188,7 +194,7 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
             </div>
             <button
               onClick={handleNewUserClick}
-              className="flex items-center justify-center gap-1.5 px-4 py-2 bg-brand-blue-dark hover:bg-brand-blue-primary text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 px-4 py-2 min-h-[44px] bg-brand-blue-dark hover:bg-brand-blue-primary text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>Novo Usuário</span>
@@ -224,7 +230,7 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
 
                   <button
                     onClick={() => handleEditClick(u)}
-                    className="w-full flex items-center justify-center gap-1 py-2 bg-white hover:bg-slate-100 text-slate-600 hover:text-brand-blue-dark font-semibold border border-slate-200 rounded-lg transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-1 min-h-[44px] py-2.5 bg-white hover:bg-slate-100 text-slate-600 hover:text-brand-blue-dark font-semibold border border-slate-200 rounded-lg transition-all cursor-pointer"
                   >
                     <Edit className="w-3.5 h-3.5" />
                     <span>Editar Credenciais</span>
@@ -288,22 +294,29 @@ export const Users: React.FC<{ activeUserName: string }> = ({ activeUserName }) 
               </div>
 
               {/* Password */}
-              <div className="space-y-1">
-                <label htmlFor="edit-user-password" className="font-bold text-slate-400 block uppercase tracking-wider">Senha de Acesso</label>
-                <input
-                  id="edit-user-password"
-                  type="text"
-                  required
-                  placeholder={isCreating ? "Min. 6 caracteres" : "Senha atual"}
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-brand-blue-primary focus:ring-1 focus:ring-brand-blue-primary/20 outline-none transition-all bg-white font-mono"
-                />
-              </div>
+              {(!db.isSupabaseMode() || isCreating) ? (
+                <div className="space-y-1">
+                  <label htmlFor="edit-user-password" className="font-bold text-slate-400 block uppercase tracking-wider">Senha de Acesso</label>
+                  <input
+                    id="edit-user-password"
+                    type="text"
+                    required
+                    placeholder={isCreating ? "Min. 6 caracteres" : "Senha atual"}
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-brand-blue-primary focus:ring-1 focus:ring-brand-blue-primary/20 outline-none transition-all bg-white font-mono"
+                  />
+                </div>
+              ) : (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[10px] text-slate-500 font-light leading-relaxed">
+                  <span className="font-bold text-slate-700 block mb-0.5">Gestão de Senha Segura</span>
+                  No modo Nuvem (Supabase Auth), a alteração de senhas deve ser realizada pelo próprio usuário através da redefinição de senha ou pelo painel do Supabase.
+                </div>
+              )}
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-1.5 px-5 py-2.5 bg-brand-blue-dark hover:bg-brand-blue-primary text-white font-bold rounded-xl transition-all shadow-md shadow-slate-900/10 cursor-pointer"
+                className="w-full flex items-center justify-center gap-1.5 px-5 py-2.5 min-h-[44px] bg-brand-blue-dark hover:bg-brand-blue-primary text-white font-bold rounded-xl transition-all shadow-md shadow-slate-900/10 cursor-pointer"
               >
                 <Save className="w-4 h-4" />
                 <span>{isCreating ? 'Cadastrar Usuário' : 'Salvar Credenciais'}</span>

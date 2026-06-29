@@ -102,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     setCollapsed(true);
                   }
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                className={`w-full flex items-center gap-3 px-3 py-3 min-h-[44px] rounded-xl text-sm font-medium transition-all cursor-pointer ${
                   isActive 
                     ? 'bg-brand-green-primary text-white shadow-md shadow-emerald-950/20' 
                     : 'text-slate-300 hover:bg-slate-850 hover:text-white'
@@ -127,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
         <button
           onClick={onLogout}
-          className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-all cursor-pointer`}
+          className={`w-full flex items-center gap-3 px-3 py-3 min-h-[44px] rounded-xl text-sm font-medium text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-all cursor-pointer`}
           title={collapsed ? 'Sair' : undefined}
         >
           <LogOut className="w-5 h-5 flex-shrink-0" />
