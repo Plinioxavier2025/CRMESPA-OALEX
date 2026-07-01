@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { db } from '../services/db';
 import type { Paciente } from '../services/db';
 import { 
@@ -364,9 +365,10 @@ export const BulkDelete: React.FC<BulkDeleteProps> = ({ activeUserName }) => {
       </div>
 
       {/* Safety Confirmation Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-slide-up">
+      {isModalOpen && createPortal(
+        <div className="fixed inset-0 z-55 flex items-center justify-center p-4">
+          <div onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs cursor-pointer" />
+          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-slide-up z-10">
             
             {/* Modal Header */}
             <div className="bg-red-50 p-5 border-b border-red-100 flex items-start gap-3.5">
@@ -381,12 +383,12 @@ export const BulkDelete: React.FC<BulkDeleteProps> = ({ activeUserName }) => {
 
             {/* Modal Body */}
             <div className="p-6 space-y-4">
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed text-xs">
                 Você está prestes a excluir definitivamente <strong>{selectedIds.size}</strong> pacientes com status <strong>"{selectedStatus}"</strong>. 
                 Esta ação apagará todos os dados associados a estes cadastros permanentemente.
               </p>
 
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 space-y-1.5">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 space-y-1.5 text-xs">
                 <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Ação requerida</span>
                 <p className="text-slate-700 leading-relaxed font-semibold">
                   Para prosseguir, digite a palavra <strong className="text-red-600">EXCLUIR</strong> no campo abaixo:
@@ -403,7 +405,7 @@ export const BulkDelete: React.FC<BulkDeleteProps> = ({ activeUserName }) => {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 text-xs">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
@@ -427,7 +429,8 @@ export const BulkDelete: React.FC<BulkDeleteProps> = ({ activeUserName }) => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
