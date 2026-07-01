@@ -139,7 +139,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         telefone,
         convenio,
         status,
-        motivo_desistencia: status === 'Desistiu' ? motivoFinal : undefined,
+        motivo_desistencia: status === 'Desistiu' ? motivoFinal : null,
         usuario_cadastro: patient?.usuario_cadastro || activeUserName
       };
 

@@ -15,7 +15,7 @@ export interface Paciente {
   telefone: string;
   convenio: string;
   status: 'Novo Cliente' | 'Ativo' | 'Desistiu' | 'Inativo';
-  motivo_desistencia?: string; // e.g. "Questão financeira", "Alta terapêutica", "Outro: Descrição..."
+  motivo_desistencia?: string | null; // e.g. "Questão financeira", "Alta terapêutica", "Outro: Descrição..."
   data_cadastro: string; // YYYY-MM-DD
   hora_cadastro: string; // HH:MM:SS
   data_ultima_atualizacao: string; // YYYY-MM-DD
@@ -361,6 +361,17 @@ export const db = {
     }
     const pacientes = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
     const filtered = pacientes.filter(p => p.id !== id);
+    setLocal('pacientes', filtered);
+    return true;
+  },
+
+  async deletePacientes(ids: string[]): Promise<boolean> {
+    if (supabase) {
+      const { error } = await supabase.from('pacientes').delete().in('id', ids);
+      return !error;
+    }
+    const pacientes = getLocal<Paciente[]>('pacientes', MOCK_PACIENTES);
+    const filtered = pacientes.filter(p => !ids.includes(p.id));
     setLocal('pacientes', filtered);
     return true;
   },

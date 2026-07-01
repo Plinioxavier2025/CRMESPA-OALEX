@@ -11,7 +11,8 @@ import {
   LogOut, 
   ChevronLeft, 
   ChevronRight,
-  History
+  History,
+  Trash2
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -39,6 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'analise', name: 'Análise Mensal', icon: BarChart3 },
     { id: 'novos-mes', name: 'Novos por Mês', icon: History },
     { id: 'relatorios', name: 'Relatórios', icon: FileText },
+    { id: 'exclusao-lote', name: 'Exclusão em Lote', icon: Trash2 },
     { id: 'configuracoes', name: 'Configurações', icon: Settings },
     { id: 'usuarios', name: 'Usuários', icon: UserCog }
   ];

@@ -88,32 +88,26 @@ export const MonthlyAnalysis: React.FC = () => {
   const previousYearVal = Number(selectedMonth) === 1 ? Number(selectedYear) - 1 : Number(selectedYear);
   const prevMonthPrefix = `${previousYearVal}-${String(previousMonthVal).padStart(2, '0')}`;
 
-  const isJune2026 = targetPrefix === '2026-06';
-
   // 1. Novos Pacientes (registered in the selected month or modified to Active/New in this month)
   const novosMes = isBeforeJune2026 
     ? 0 
-    : isJune2026 
-      ? 24 
-      : patients.filter(p => {
-          const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro.startsWith(targetPrefix) && p.data_cadastro >= '2026-06-01';
-          const isModifiedToActive = p.data_ultima_atualizacao.startsWith(targetPrefix) && 
-                                     p.data_ultima_atualizacao !== p.data_cadastro && 
-                                     (p.status === 'Ativo' || p.status === 'Novo Cliente');
-          return isNewDirect || isModifiedToActive;
-        }).length;
+    : patients.filter(p => {
+        const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro.startsWith(targetPrefix) && p.data_cadastro >= '2026-06-01';
+        const isModifiedToActive = p.data_ultima_atualizacao.startsWith(targetPrefix) && 
+                                   p.data_ultima_atualizacao !== p.data_cadastro && 
+                                   (p.status === 'Ativo' || p.status === 'Novo Cliente');
+        return isNewDirect || isModifiedToActive;
+      }).length;
 
   // 2. Pacientes Desistentes (status changed to Desistiu or Inativo in the selected month)
   const desistentesMes = isBeforeJune2026 
     ? 0 
-    : isJune2026 
-      ? 3 
-      : patients.filter(p => {
-          const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
-          const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(targetPrefix);
-          const isSystemScope = !p.usuario_cadastro?.includes('Planilha') || (p.data_ultima_atualizacao !== p.data_cadastro);
-          return isExitStatus && isModifiedThisMonth && isSystemScope;
-        }).length;
+    : patients.filter(p => {
+        const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
+        const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(targetPrefix);
+        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') || (p.data_ultima_atualizacao !== p.data_cadastro);
+        return isExitStatus && isModifiedThisMonth && isSystemScope;
+      }).length;
 
   // 3. Pacientes Ativos no final do mês selecionado (system scope)
   const ativosFimMes = patients.filter(p => {

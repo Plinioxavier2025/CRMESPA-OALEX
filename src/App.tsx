@@ -10,6 +10,7 @@ import { NewPatientsHistory } from './views/NewPatientsHistory';
 import { Reports } from './views/Reports';
 import { Settings } from './views/Settings';
 import { Users } from './views/Users';
+import { BulkDelete } from './views/BulkDelete';
 import { db } from './services/db';
 import type { Usuario } from './services/db';
 import { supabase } from './services/supabase';
@@ -33,11 +34,14 @@ function App() {
     const checkSession = async () => {
       // 1. Background ping to wake up Supabase from cold start (no await, runs in bg)
       if (db.isSupabaseMode() && supabase) {
-        supabase.from('usuarios').select('id').limit(1).then(() => {
-          console.log("Supabase ping successful (woken up)");
-        }).catch(err => {
-          console.error("Supabase ping error:", err);
-        });
+        (async () => {
+          try {
+            await supabase.from('usuarios').select('id').limit(1);
+            console.log("Supabase ping successful (woken up)");
+          } catch (err) {
+            console.error("Supabase ping error:", err);
+          }
+        })();
       }
 
       // 2. Session verification
@@ -166,6 +170,7 @@ function App() {
       case 'analise': return 'Análise de Desempenho Mensal';
       case 'novos-mes': return 'Histórico de Novos Clientes';
       case 'relatorios': return 'Exportação de Relatórios Gerenciais';
+      case 'exclusao-lote': return 'Exclusão de Pacientes em Lote';
       case 'configuracoes': return 'Configurações de Prontuário';
       case 'usuarios': return 'Administradores do Sistema';
       default: return 'CRM Espaço Alex';
@@ -223,6 +228,9 @@ function App() {
         )}
         {currentTab === 'usuarios' && (
           <Users activeUserName={user.nome} />
+        )}
+        {currentTab === 'exclusao-lote' && (
+          <BulkDelete activeUserName={user.nome} />
         )}
       </div>
     </Layout>
