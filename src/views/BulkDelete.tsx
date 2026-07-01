@@ -88,6 +88,11 @@ export const BulkDelete: React.FC<BulkDeleteProps> = ({ activeUserName }) => {
     }
   };
 
+  const handleSelectBatch = (limit: number) => {
+    const ids = searchedPatients.slice(0, limit).map(p => p.id);
+    setSelectedIds(new Set(ids));
+  };
+
   const handleDeleteTrigger = () => {
     if (selectedIds.size === 0) return;
     setSecurityInput('');
@@ -243,11 +248,39 @@ export const BulkDelete: React.FC<BulkDeleteProps> = ({ activeUserName }) => {
         {/* Selected Count & Action Bar */}
         {selectedStatus && !loading && patients.length > 0 && (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl gap-3 border border-slate-100">
-            <div className="flex items-center gap-2">
-              <Info className="w-4 h-4 text-brand-blue-primary" />
-              <span className="text-[11px] font-medium text-slate-600">
-                <strong>{selectedIds.size}</strong> de {searchedPatients.length} pacientes selecionados para exclusão.
-              </span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-brand-blue-primary flex-shrink-0" />
+                <span className="text-[11px] font-medium text-slate-600">
+                  <strong>{selectedIds.size}</strong> de {searchedPatients.length} selecionados.
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => handleSelectBatch(20)}
+                  className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-[10px] font-bold text-slate-700 transition-all cursor-pointer shadow-xs"
+                >
+                  Selecionar 20
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectBatch(50)}
+                  className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-[10px] font-bold text-slate-700 transition-all cursor-pointer shadow-xs"
+                >
+                  Selecionar 50
+                </button>
+                {selectedIds.size > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedIds(new Set())}
+                    className="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 text-[10px] font-bold transition-all cursor-pointer"
+                  >
+                    Limpar Seleção
+                  </button>
+                )}
+              </div>
             </div>
             
             <button
