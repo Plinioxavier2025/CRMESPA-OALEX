@@ -460,8 +460,18 @@ export const PatientsList: React.FC<PatientsListProps> = ({
                 className="w-full p-2 rounded-lg border border-slate-200 outline-none bg-white"
               >
                 <option value="">Todos</option>
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
+                {(() => {
+                  const currentYear = new Date().getFullYear();
+                  const startYear = 2025;
+                  const endYear = Math.max(currentYear + 1, 2027);
+                  const years = [];
+                  for (let y = endYear; y >= startYear; y--) {
+                    years.push(String(y));
+                  }
+                  return years.map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ));
+                })()}
               </select>
             </div>
 

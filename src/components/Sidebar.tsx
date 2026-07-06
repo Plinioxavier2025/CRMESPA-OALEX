@@ -52,8 +52,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }`}
     >
       {/* Header section with brand */}
-      <div>
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-850">
+      <div className="flex flex-col flex-1 min-h-0">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-850 flex-shrink-0">
           {!collapsed ? (
             <div className="flex items-center gap-2 select-none animate-fade-in">
               <img 
@@ -89,9 +89,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-
         {/* Navigation Items */}
-        <nav className="p-3 space-y-1">
+        <nav className="p-3 space-y-1 overflow-y-auto flex-1 select-none [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-track]:bg-transparent">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.id;
@@ -120,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer section with User info & logout */}
-      <div className="p-3 border-t border-slate-850">
+      <div className="p-3 border-t border-slate-850 flex-shrink-0">
         {!collapsed && (
           <div className="px-3 py-2 mb-2 rounded-xl bg-slate-850 text-slate-300 text-xs truncate flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-brand-green-primary animate-pulse" />

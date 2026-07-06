@@ -32,9 +32,13 @@ export const MonthlyAnalysis: React.FC = () => {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Selected Month and Year (defaulting to current simulation month: June 2026)
-  const [selectedMonth, setSelectedMonth] = useState('06');
-  const [selectedYear, setSelectedYear] = useState('2026');
+  // Selected Month and Year (defaulting to current month and year)
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    return String(new Date().getMonth() + 1).padStart(2, '0');
+  });
+  const [selectedYear, setSelectedYear] = useState(() => {
+    return String(new Date().getFullYear());
+  });
   const [dbError, setDbError] = useState<any>(null);
 
   const monthsList = [
@@ -52,7 +56,16 @@ export const MonthlyAnalysis: React.FC = () => {
     { value: '12', label: 'Dezembro' }
   ];
 
-  const yearsList = ['2026', '2025'];
+  const yearsList = (() => {
+    const currentYear = new Date().getFullYear();
+    const startYear = 2025;
+    const endYear = Math.max(currentYear + 1, 2027);
+    const list = [];
+    for (let y = endYear; y >= startYear; y--) {
+      list.push(String(y));
+    }
+    return list;
+  })();
 
   useEffect(() => {
     const fetchPatients = async () => {

@@ -37,9 +37,13 @@ export const Dashboard: React.FC<{
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Time context variables based on selection (Defaults to June 2026 as current simulation month)
-  const [selectedMonth, setSelectedMonth] = useState('06');
-  const [selectedYear, setSelectedYear] = useState('2026');
+  // Time context variables based on selection (Defaults to current month/year)
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    return String(new Date().getMonth() + 1).padStart(2, '0');
+  });
+  const [selectedYear, setSelectedYear] = useState(() => {
+    return String(new Date().getFullYear());
+  });
   
   const [seeding, setSeeding] = useState(false);
   const [dbError, setDbError] = useState<any>(null);
@@ -364,8 +368,18 @@ export const Dashboard: React.FC<{
               onChange={(e) => setSelectedYear(e.target.value)}
               className="bg-transparent text-white font-bold outline-none border-none cursor-pointer focus:ring-0 focus:outline-none [&>option]:text-slate-800 p-0"
             >
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
+              {(() => {
+                const currentYear = new Date().getFullYear();
+                const startYear = 2025;
+                const endYear = Math.max(currentYear + 1, 2027);
+                const years = [];
+                for (let y = endYear; y >= startYear; y--) {
+                  years.push(String(y));
+                }
+                return years.map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ));
+              })()}
             </select>
           </div>
         </div>

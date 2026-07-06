@@ -43,7 +43,16 @@ export const NewPatientsHistory: React.FC = () => {
     { value: '12', label: 'Dezembro' }
   ];
 
-  const yearsList = ['2026', '2025', '2027'];
+  const yearsList = (() => {
+    const currentYear = new Date().getFullYear();
+    const startYear = 2025;
+    const endYear = Math.max(currentYear + 1, 2027);
+    const list = [];
+    for (let y = endYear; y >= startYear; y--) {
+      list.push(String(y));
+    }
+    return list;
+  })();
 
   useEffect(() => {
     const fetchPatients = async () => {
