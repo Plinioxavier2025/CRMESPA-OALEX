@@ -34,11 +34,24 @@ export const MonthlyAnalysis: React.FC = () => {
   
   // Selected Month and Year (defaulting to current month and year)
   const [selectedMonth, setSelectedMonth] = useState(() => {
+    const saved = localStorage.getItem('crm_selected_month');
+    if (saved) return saved;
     return String(new Date().getMonth() + 1).padStart(2, '0');
   });
   const [selectedYear, setSelectedYear] = useState(() => {
+    const saved = localStorage.getItem('crm_selected_year');
+    if (saved) return saved;
     return String(new Date().getFullYear());
   });
+
+  // Save to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('crm_selected_month', selectedMonth);
+  }, [selectedMonth]);
+
+  useEffect(() => {
+    localStorage.setItem('crm_selected_year', selectedYear);
+  }, [selectedYear]);
   const [dbError, setDbError] = useState<any>(null);
 
   const monthsList = [

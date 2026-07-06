@@ -25,7 +25,15 @@ import {
 export const NewPatientsHistory: React.FC = () => {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  const [selectedYear, setSelectedYear] = useState(() => {
+    const saved = localStorage.getItem('crm_selected_year');
+    if (saved) return saved;
+    return new Date().getFullYear().toString();
+  });
+
+  useEffect(() => {
+    localStorage.setItem('crm_selected_year', selectedYear);
+  }, [selectedYear]);
   const [dbError, setDbError] = useState<any>(null);
 
   const monthsList = [
