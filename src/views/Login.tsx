@@ -124,7 +124,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         {/* Background Image with Ken Burns / Hover Scale effect */}
         <div 
           className="absolute inset-0 bg-cover bg-center transition-transform duration-10000 hover:scale-105" 
-          style={{ backgroundImage: `url('/alex_silveira.jpeg')` }}
+          style={{ backgroundImage: `url('/alex_silveira_clean.png')` }}
         />
         {/* Gradient overlays to darken the image and improve text contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/65 to-transparent md:bg-gradient-to-r md:from-slate-950/90 md:via-slate-950/40 md:to-transparent" />
@@ -153,12 +153,12 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         </div>
 
         {/* Eye-catching Quote & Subtitle at bottom/center */}
-        <div className="relative z-10 mt-auto max-w-2xl animate-slide-up">
-          <span className="inline-block bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] uppercase tracking-[0.25em] font-bold px-3 py-1 rounded-full mb-6 select-none shadow-sm">
+        <div className="relative z-10 mt-auto max-w-lg animate-slide-up">
+          <span className="inline-block bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] uppercase tracking-[0.25em] font-bold px-3 py-1 rounded-full mb-4 select-none shadow-sm">
             Filosofia de Direcionamento
           </span>
           
-          <h1 className="font-outfit font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white leading-tight tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+          <h1 className="font-outfit font-black text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white leading-tight tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
             {/* First Line */}
             <div className="flex flex-wrap gap-x-3 gap-y-1 mb-1 sm:mb-2">
               {["AQUELE", "QUE", "NÃO", "SABE", "ONDE", "VAI,"].map((word, i) => (
