@@ -124,7 +124,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         {/* Background Image with Ken Burns / Hover Scale effect */}
         <div 
           className="absolute inset-0 bg-cover bg-center transition-transform duration-10000 hover:scale-105" 
-          style={{ backgroundImage: `url('/scenic_pathway.png')` }}
+          style={{ backgroundImage: `url('/alex_silveira.jpeg')` }}
         />
         {/* Gradient overlays to darken the image and improve text contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/65 to-transparent md:bg-gradient-to-r md:from-slate-950/90 md:via-slate-950/40 md:to-transparent" />
