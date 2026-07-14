@@ -187,12 +187,6 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               ))}
             </div>
           </h1>
-          
-          <div className="h-[3px] w-16 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full mt-8 mb-6" />
-          
-          <p className="text-slate-200 text-sm md:text-base font-light leading-relaxed max-w-md tracking-wide drop-shadow-md">
-            Tenha clareza estratégica. Defina metas precisas para a sua clínica e acompanhe cada indicador de sucesso em um único painel de controle.
-          </p>
         </div>
       </div>
 
