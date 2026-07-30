@@ -169,13 +169,19 @@ export const Dashboard: React.FC<{
   const prefix = `${selectedYear}-${selectedMonth}`;
   const isBeforeJuly2026 = prefix < '2026-07';
   
-  // Novos do mês: Cadastrados via sistema no mês selecionado a partir de julho de 2026
+  // Novos do mês: Cadastrados via sistema no mês selecionado a partir de julho de 2026,
+  // ou pacientes da planilha antiga que foram manualmente reativados/editados pelo usuário neste mês.
   const novosMes = isBeforeJuly2026 
     ? 0 
     : patients.filter(p => {
-        return !p.usuario_cadastro?.includes('Planilha') && 
-               p.data_cadastro.startsWith(prefix) && 
-               p.data_cadastro >= '2026-07-01';
+        const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && 
+                            p.data_cadastro.startsWith(prefix) && 
+                            p.data_cadastro >= '2026-07-01';
+        const isModifiedToActive = !p.usuario_cadastro?.includes('Planilha') &&
+                                   p.data_cadastro < '2026-07-01' &&
+                                   p.data_ultima_atualizacao.startsWith(prefix) && 
+                                   (p.status === 'Ativo' || p.status === 'Novo Cliente');
+        return isNewDirect || isModifiedToActive;
       }).length;
 
   // Desistentes/Inativos do mês (Saídas): Alterações de status para Desistiu ou Inativo no mês selecionado (a partir de julho de 2026)
@@ -184,7 +190,8 @@ export const Dashboard: React.FC<{
     : patients.filter(p => {
         const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
         const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(prefix);
-        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01';
+        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && 
+                              (p.data_cadastro >= '2026-07-01' || p.data_ultima_atualizacao !== p.data_cadastro);
         return isExitStatus && isModifiedThisMonth && isSystemScope;
       }).length;
 

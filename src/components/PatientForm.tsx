@@ -140,7 +140,9 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         convenio,
         status,
         motivo_desistencia: status === 'Desistiu' ? motivoFinal : null,
-        usuario_cadastro: patient?.usuario_cadastro || activeUserName
+        usuario_cadastro: (patient?.usuario_cadastro && !patient.usuario_cadastro.includes('Planilha'))
+          ? patient.usuario_cadastro 
+          : activeUserName
       };
 
       await db.savePaciente(payload);

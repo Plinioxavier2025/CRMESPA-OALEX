@@ -109,17 +109,26 @@ export const NewPatientsHistory: React.FC<NewPatientsHistoryProps> = ({ navigate
   const monthlyData = monthsList.map(month => {
     const yearMonthPrefix = `${selectedYear}-${month.value}`;
     
-    // Entradas (registrados naquele mês, não importados da planilha original)
-    const entries = patients.filter(p => 
-      p.data_cadastro.startsWith(yearMonthPrefix) && 
-      !p.usuario_cadastro?.includes('Planilha')
-    ).length;
+    // Entradas (registrados naquele mês via sistema a partir de julho, ou manual spreadsheet patient activations)
+    const entries = patients.filter(p => {
+      const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && 
+                          p.data_cadastro.startsWith(yearMonthPrefix) && 
+                          p.data_cadastro >= '2026-07-01';
+      const isModifiedToActive = !p.usuario_cadastro?.includes('Planilha') &&
+                                 p.data_cadastro < '2026-07-01' &&
+                                 p.data_ultima_atualizacao.startsWith(yearMonthPrefix) && 
+                                 (p.status === 'Ativo' || p.status === 'Novo Cliente');
+      return isNewDirect || isModifiedToActive;
+    }).length;
 
-    // Saídas (marcados como Desistiu ou Inativo, com data de atualização naquele mês)
-    const exits = patients.filter(p => 
-      (p.status === 'Desistiu' || p.status === 'Inativo') && 
-      p.data_ultima_atualizacao.startsWith(yearMonthPrefix)
-    ).length;
+    // Saídas (marcados como Desistiu ou Inativo, com data de atualização naquele mês, e no escopo do sistema)
+    const exits = patients.filter(p => {
+      const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
+      const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(yearMonthPrefix);
+      const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && 
+                            (p.data_cadastro >= '2026-07-01' || p.data_ultima_atualizacao !== p.data_cadastro);
+      return isExitStatus && isModifiedThisMonth && isSystemScope;
+    }).length;
     // Se for anterior a 2026, entradas e saídas permanecem 0
 
     const balance = entries - exits;
@@ -161,17 +170,26 @@ export const NewPatientsHistory: React.FC<NewPatientsHistoryProps> = ({ navigate
   
   const entriesPatients = selectedMonth === 'all' 
     ? [] 
-    : patients.filter(p => 
-        p.data_cadastro.startsWith(selectedYearMonth) && 
-        !p.usuario_cadastro?.includes('Planilha')
-      );
+    : patients.filter(p => {
+        const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && 
+                            p.data_cadastro.startsWith(selectedYearMonth) && 
+                            p.data_cadastro >= '2026-07-01';
+        const isModifiedToActive = !p.usuario_cadastro?.includes('Planilha') &&
+                                   p.data_cadastro < '2026-07-01' &&
+                                   p.data_ultima_atualizacao.startsWith(selectedYearMonth) && 
+                                   (p.status === 'Ativo' || p.status === 'Novo Cliente');
+        return isNewDirect || isModifiedToActive;
+      });
 
   const exitsPatients = selectedMonth === 'all' 
     ? [] 
-    : patients.filter(p => 
-        (p.status === 'Desistiu' || p.status === 'Inativo') && 
-        p.data_ultima_atualizacao.startsWith(selectedYearMonth)
-      );
+    : patients.filter(p => {
+        const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
+        const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(selectedYearMonth);
+        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && 
+                              (p.data_cadastro >= '2026-07-01' || p.data_ultima_atualizacao !== p.data_cadastro);
+        return isExitStatus && isModifiedThisMonth && isSystemScope;
+      });
 
   return (
     <div className="space-y-6">

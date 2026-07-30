@@ -114,13 +114,18 @@ export const MonthlyAnalysis: React.FC = () => {
   const previousYearVal = Number(selectedMonth) === 1 ? Number(selectedYear) - 1 : Number(selectedYear);
   const prevMonthPrefix = `${previousYearVal}-${String(previousMonthVal).padStart(2, '0')}`;
 
-  // 1. Novos Pacientes (registered via system in the selected month starting from July 2026)
+  // 1. Novos Pacientes (registered via system in the selected month starting from July 2026, or manual spreadsheet patient activations)
   const novosMes = isBeforeJuly2026 
     ? 0 
     : patients.filter(p => {
-        return !p.usuario_cadastro?.includes('Planilha') && 
-               p.data_cadastro.startsWith(targetPrefix) && 
-               p.data_cadastro >= '2026-07-01';
+        const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && 
+                            p.data_cadastro.startsWith(targetPrefix) && 
+                            p.data_cadastro >= '2026-07-01';
+        const isModifiedToActive = !p.usuario_cadastro?.includes('Planilha') &&
+                                   p.data_cadastro < '2026-07-01' &&
+                                   p.data_ultima_atualizacao.startsWith(targetPrefix) && 
+                                   (p.status === 'Ativo' || p.status === 'Novo Cliente');
+        return isNewDirect || isModifiedToActive;
       }).length;
 
   // 2. Pacientes Desistentes (status changed to Desistiu or Inativo in the selected month, system-registered starting from July 2026)
@@ -129,7 +134,8 @@ export const MonthlyAnalysis: React.FC = () => {
     : patients.filter(p => {
         const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
         const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(targetPrefix);
-        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01';
+        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && 
+                              (p.data_cadastro >= '2026-07-01' || p.data_ultima_atualizacao !== p.data_cadastro);
         return isExitStatus && isModifiedThisMonth && isSystemScope;
       }).length;
 
@@ -209,8 +215,24 @@ export const MonthlyAnalysis: React.FC = () => {
     const prefixStr = `${yVal}-${mStr}`;
     const mName = monthsList.find(m => m.value === mStr)?.label.substring(0, 3) || mStr;
 
-    const entries = patients.filter(p => p.data_cadastro.startsWith(prefixStr) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
-    const exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(prefixStr) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
+    const entries = patients.filter(p => {
+      const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && 
+                          p.data_cadastro.startsWith(prefixStr) && 
+                          p.data_cadastro >= '2026-07-01';
+      const isModifiedToActive = !p.usuario_cadastro?.includes('Planilha') &&
+                                 p.data_cadastro < '2026-07-01' &&
+                                 p.data_ultima_atualizacao.startsWith(prefixStr) && 
+                                 (p.status === 'Ativo' || p.status === 'Novo Cliente');
+      return isNewDirect || isModifiedToActive;
+    }).length;
+
+    const exits = patients.filter(p => {
+      const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
+      const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(prefixStr);
+      const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && 
+                            (p.data_cadastro >= '2026-07-01' || p.data_ultima_atualizacao !== p.data_cadastro);
+      return isExitStatus && isModifiedThisMonth && isSystemScope;
+    }).length;
 
     trendData.push({
       name: `${mName}/${String(yVal).substring(2)}`,
