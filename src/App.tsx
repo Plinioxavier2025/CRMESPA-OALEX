@@ -32,6 +32,10 @@ function App() {
   // Check login session on mount
   useEffect(() => {
     const checkSession = async () => {
+      // Reset selected month and year to default/current on page load
+      localStorage.removeItem('crm_selected_month');
+      localStorage.removeItem('crm_selected_year');
+
       // 1. Background ping to wake up Supabase from cold start (no await, runs in bg)
       if (db.isSupabaseMode() && supabase) {
         (async () => {
