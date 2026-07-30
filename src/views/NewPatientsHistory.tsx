@@ -9,7 +9,10 @@ import {
   History,
   TrendingDown,
   Info,
-  ShieldAlert
+  ShieldAlert,
+  Calendar,
+  Phone,
+  FilterX
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -22,7 +25,11 @@ import {
   CartesianGrid 
 } from 'recharts';
 
-export const NewPatientsHistory: React.FC = () => {
+interface NewPatientsHistoryProps {
+  navigateToPatients?: (status?: string, month?: string, year?: string, excludePlanilha?: boolean) => void;
+}
+
+export const NewPatientsHistory: React.FC<NewPatientsHistoryProps> = ({ navigateToPatients }) => {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(() => {
@@ -31,9 +38,19 @@ export const NewPatientsHistory: React.FC = () => {
     return new Date().getFullYear().toString();
   });
 
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const saved = localStorage.getItem('crm_history_selected_month');
+    if (saved) return saved;
+    return 'all';
+  });
+
   useEffect(() => {
     localStorage.setItem('crm_selected_year', selectedYear);
   }, [selectedYear]);
+
+  useEffect(() => {
+    localStorage.setItem('crm_history_selected_month', selectedMonth);
+  }, [selectedMonth]);
   const [dbError, setDbError] = useState<any>(null);
 
   const monthsList = [
@@ -125,6 +142,37 @@ export const NewPatientsHistory: React.FC = () => {
     ? `${bestMonthObj.monthLabel} (${bestMonthObj['Entradas (Novos)']})`
     : 'Nenhum';
 
+  const selectedMonthData = selectedMonth === 'all' 
+    ? null 
+    : monthlyData.find(m => m.monthKey === selectedMonth);
+
+  const displayEntries = selectedMonthData ? selectedMonthData['Entradas (Novos)'] : totalEntries;
+  const displayExits = selectedMonthData ? selectedMonthData['Saídas (Desistências)'] : totalExits;
+  const displayBalance = selectedMonthData ? selectedMonthData['Saldo Líquido'] : netBalance;
+  
+  const entriesLabel = selectedMonth === 'all' ? 'Entradas no Ano' : 'Entradas no Mês';
+  const exitsLabel = selectedMonth === 'all' ? 'Saídas no Ano' : 'Saídas no Mês';
+  const balanceLabel = selectedMonth === 'all' ? 'Saldo de Crescimento' : 'Saldo de Crescimento';
+  const referenceMonthLabel = selectedMonth === 'all' 
+    ? 'Ano Inteiro' 
+    : monthsList.find(m => m.value === selectedMonth)?.label || '';
+
+  const selectedYearMonth = `${selectedYear}-${selectedMonth}`;
+  
+  const entriesPatients = selectedMonth === 'all' 
+    ? [] 
+    : patients.filter(p => 
+        p.data_cadastro.startsWith(selectedYearMonth) && 
+        !p.usuario_cadastro?.includes('Planilha')
+      );
+
+  const exitsPatients = selectedMonth === 'all' 
+    ? [] 
+    : patients.filter(p => 
+        (p.status === 'Desistiu' || p.status === 'Inativo') && 
+        p.data_ultima_atualizacao.startsWith(selectedYearMonth)
+      );
+
   return (
     <div className="space-y-6">
       
@@ -140,17 +188,33 @@ export const NewPatientsHistory: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <span className="text-xs text-slate-500 font-semibold">Selecionar Ano:</span>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="px-4 py-2 border border-slate-200 focus:border-brand-blue-primary rounded-xl text-xs font-semibold bg-white outline-none appearance-none cursor-pointer min-w-[100px]"
-          >
-            {yearsList.map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
+        <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-semibold">Mês:</span>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="px-4 py-2 border border-slate-200 focus:border-brand-blue-primary rounded-xl text-xs font-semibold bg-white outline-none appearance-none cursor-pointer min-w-[130px]"
+            >
+              <option value="all">Todos os Meses</option>
+              {monthsList.map(m => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-semibold">Ano:</span>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="px-4 py-2 border border-slate-200 focus:border-brand-blue-primary rounded-xl text-xs font-semibold bg-white outline-none appearance-none cursor-pointer min-w-[90px]"
+            >
+              {yearsList.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -187,8 +251,8 @@ export const NewPatientsHistory: React.FC = () => {
             <UserPlus className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Entradas no Ano</span>
-            <strong className="text-lg font-bold text-slate-700 block mt-0.5">{totalEntries} novos</strong>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">{entriesLabel}</span>
+            <strong className="text-lg font-bold text-slate-700 block mt-0.5">{displayEntries} novos</strong>
           </div>
         </div>
 
@@ -198,20 +262,20 @@ export const NewPatientsHistory: React.FC = () => {
             <UserMinus className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Saídas no Ano</span>
-            <strong className="text-lg font-bold text-slate-700 block mt-0.5">{totalExits} desistências</strong>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">{exitsLabel}</span>
+            <strong className="text-lg font-bold text-slate-700 block mt-0.5">{displayExits} desistências</strong>
           </div>
         </div>
 
         {/* Saldo Líquido */}
         <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-          <div className={`p-2 rounded-lg ${netBalance >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-            {netBalance >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+          <div className={`p-2 rounded-lg ${displayBalance >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+            {displayBalance >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Saldo de Crescimento</span>
-            <strong className={`text-lg font-bold block mt-0.5 ${netBalance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-              {netBalance >= 0 ? '+' : ''}{netBalance} pacientes
+            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">{balanceLabel}</span>
+            <strong className={`text-lg font-bold block mt-0.5 ${displayBalance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+              {displayBalance >= 0 ? '+' : ''}{displayBalance} pacientes
             </strong>
           </div>
         </div>
@@ -222,8 +286,12 @@ export const NewPatientsHistory: React.FC = () => {
             <CalendarDays className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Melhor Mês do Ano</span>
-            <strong className="text-lg font-bold text-slate-700 block mt-0.5 truncate">{bestMonthLabel}</strong>
+            <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">
+              {selectedMonth === 'all' ? 'Melhor Mês do Ano' : 'Mês de Referência'}
+            </span>
+            <strong className="text-lg font-bold text-slate-700 block mt-0.5 truncate">
+              {selectedMonth === 'all' ? bestMonthLabel : referenceMonthLabel}
+            </strong>
           </div>
         </div>
 
@@ -282,22 +350,44 @@ export const NewPatientsHistory: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                 {monthlyData.map((row) => (
-                  <tr key={row.monthKey} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-4 py-2.5 text-slate-800 font-semibold">{row.monthLabel}</td>
+                  <tr 
+                    key={row.monthKey} 
+                    className={`transition-colors cursor-pointer ${selectedMonth === row.monthKey ? 'bg-blue-50/50 hover:bg-blue-50' : 'hover:bg-slate-50/50'}`}
+                    onClick={() => setSelectedMonth(row.monthKey)}
+                    title={`Clique para selecionar ${row.monthLabel} e ver detalhamento`}
+                  >
+                    <td className="px-4 py-2.5 text-slate-800 font-semibold flex items-center gap-1.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${selectedMonth === row.monthKey ? 'bg-brand-blue-primary' : 'bg-transparent'}`} />
+                      {row.monthLabel}
+                    </td>
                     <td className="px-3 py-2.5 text-center text-brand-blue-primary">
                       {row['Entradas (Novos)'] > 0 ? (
-                        <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (navigateToPatients) navigateToPatients(undefined, row.monthKey, selectedYear, true);
+                          }}
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold cursor-pointer transition-colors"
+                          title={`Ver novos pacientes de ${row.monthLabel}`}
+                        >
                           {row['Entradas (Novos)']}
-                        </span>
+                        </button>
                       ) : (
                         <span className="text-slate-400 font-normal">0</span>
                       )}
                     </td>
                     <td className="px-3 py-2.5 text-center">
                       {row['Saídas (Desistências)'] > 0 ? (
-                        <span className="bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-bold">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (navigateToPatients) navigateToPatients('Desistiu', row.monthKey, selectedYear);
+                          }}
+                          className="bg-red-50 hover:bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold cursor-pointer transition-colors"
+                          title={`Ver desistências de ${row.monthLabel}`}
+                        >
                           {row['Saídas (Desistências)']}
-                        </span>
+                        </button>
                       ) : (
                         <span className="text-slate-400 font-normal">0</span>
                       )}
@@ -319,6 +409,138 @@ export const NewPatientsHistory: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Detailed Patients Section (only when a specific month is selected) */}
+      {selectedMonth !== 'all' && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6 animate-fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-3">
+            <div>
+              <h3 className="font-bold text-base text-brand-blue-dark font-outfit">
+                Detalhamento Clínico — {referenceMonthLabel} de {selectedYear}
+              </h3>
+              <p className="text-xs text-slate-400 font-light mt-0.5">
+                Listagem nominal de entradas e saídas ocorridas neste período.
+              </p>
+            </div>
+            <button
+              onClick={() => setSelectedMonth('all')}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-650 hover:text-slate-800 text-xs font-semibold rounded-xl transition-all cursor-pointer w-fit"
+            >
+              <FilterX className="w-3.5 h-3.5" />
+              <span>Ver Ano Completo</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* COLUMN 1: ENTRADAS (NEW PATIENTS) */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-brand-blue-primary" />
+                  Novos Pacientes ({entriesPatients.length})
+                </span>
+              </div>
+
+              {entriesPatients.length === 0 ? (
+                <div className="p-8 text-center border border-dashed border-slate-200 rounded-2xl text-slate-405 font-light text-xs bg-slate-50/20">
+                  Nenhum novo paciente cadastrado em {referenceMonthLabel}.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 scrollbar">
+                  {entriesPatients.map((p) => (
+                    <div 
+                      key={p.id}
+                      className="p-3 border border-slate-100 rounded-xl hover:border-slate-200 hover:shadow-xs transition-all flex items-center justify-between gap-3 bg-slate-50/30"
+                    >
+                      <div className="min-w-0 space-y-0.5">
+                        <strong 
+                          onClick={() => navigateToPatients && navigateToPatients(undefined, selectedMonth, selectedYear, true)}
+                          className="font-bold text-xs text-brand-blue-dark truncate block hover:underline cursor-pointer"
+                          title="Ir para a ficha de pacientes"
+                        >
+                          {p.nome}
+                        </strong>
+                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[10px] text-slate-400 font-medium">
+                          <span className="flex items-center gap-1">
+                            <Phone className="w-3 h-3 text-slate-350" />
+                            <span className="font-mono">{p.telefone}</span>
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3 text-slate-350" />
+                            <span>Cadastrado em: {p.data_cadastro.split('-').reverse().join('/')}</span>
+                          </span>
+                        </div>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-full border border-blue-100 bg-blue-50 text-blue-700 text-[9px] font-bold whitespace-nowrap">
+                        {p.convenio}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* COLUMN 2: SAÍDAS (DESISTÊNCIAS) */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  Desistências / Saídas ({exitsPatients.length})
+                </span>
+              </div>
+
+              {exitsPatients.length === 0 ? (
+                <div className="p-8 text-center border border-dashed border-slate-200 rounded-2xl text-slate-405 font-light text-xs bg-slate-50/20">
+                  Nenhuma desistência registrada em {referenceMonthLabel}.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 scrollbar">
+                  {exitsPatients.map((p) => (
+                    <div 
+                      key={p.id}
+                      className="p-3 border border-slate-100 rounded-xl hover:border-slate-200 hover:shadow-xs transition-all flex flex-col gap-2 bg-slate-50/30"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 space-y-0.5">
+                          <strong 
+                            onClick={() => navigateToPatients && navigateToPatients('Desistiu', selectedMonth, selectedYear)}
+                            className="font-bold text-xs text-brand-blue-dark truncate block hover:underline cursor-pointer"
+                            title="Ver desistentes no prontuário"
+                          >
+                            {p.nome}
+                          </strong>
+                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[10px] text-slate-400 font-medium">
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3 text-slate-350" />
+                              <span className="font-mono">{p.telefone}</span>
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3 text-slate-350" />
+                              <span>Saída em: {p.data_ultima_atualizacao.split('-').reverse().join('/')}</span>
+                            </span>
+                          </div>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full border border-slate-150 bg-slate-100 text-slate-600 text-[9px] font-bold whitespace-nowrap">
+                          {p.convenio}
+                        </span>
+                      </div>
+
+                      {p.motivo_desistencia && (
+                        <div className="px-2.5 py-1.5 rounded-lg bg-amber-50/50 border border-amber-100/50 text-[10px] text-amber-800 font-medium leading-relaxed">
+                          <span className="font-bold block text-[9px] text-amber-700 uppercase tracking-wider mb-0.5">Motivo Relatado:</span>
+                          {p.motivo_desistencia}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -221,7 +221,9 @@ function App() {
           <ImportExcel activeUserName={user.nome} />
         )}
         {currentTab === 'analise' && <MonthlyAnalysis />}
-        {currentTab === 'novos-mes' && <NewPatientsHistory />}
+        {currentTab === 'novos-mes' && (
+          <NewPatientsHistory navigateToPatients={navigateToPatients} />
+        )}
         {currentTab === 'relatorios' && <Reports />}
         {currentTab === 'configuracoes' && (
           <Settings activeUserName={user.nome} />

@@ -167,33 +167,30 @@ export const Dashboard: React.FC<{
 
 
   const prefix = `${selectedYear}-${selectedMonth}`;
-  const isBeforeJune2026 = prefix < '2026-06';
+  const isBeforeJuly2026 = prefix < '2026-07';
   
-  // Novos do mês: Cadastrados diretamente no site no mês selecionado (a partir de junho de 2026),
-  // ou pacientes que foram modificados no sistema para Ativo ou Novo Cliente neste mês.
-  const novosMes = isBeforeJune2026 
+  // Novos do mês: Cadastrados via sistema no mês selecionado a partir de julho de 2026
+  const novosMes = isBeforeJuly2026 
     ? 0 
     : patients.filter(p => {
-        const isNewDirect = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro.startsWith(prefix) && p.data_cadastro >= '2026-06-01';
-        const isModifiedToActive = p.data_ultima_atualizacao.startsWith(prefix) && 
-                                   p.data_ultima_atualizacao !== p.data_cadastro && 
-                                   (p.status === 'Ativo' || p.status === 'Novo Cliente');
-        return isNewDirect || isModifiedToActive;
+        return !p.usuario_cadastro?.includes('Planilha') && 
+               p.data_cadastro.startsWith(prefix) && 
+               p.data_cadastro >= '2026-07-01';
       }).length;
 
-  // Desistentes/Inativos do mês (Saídas): Alterações de status para Desistiu ou Inativo no mês selecionado
-  const desistentesMes = isBeforeJune2026 
+  // Desistentes/Inativos do mês (Saídas): Alterações de status para Desistiu ou Inativo no mês selecionado (a partir de julho de 2026)
+  const desistentesMes = isBeforeJuly2026 
     ? 0 
     : patients.filter(p => {
         const isExitStatus = p.status === 'Desistiu' || p.status === 'Inativo';
         const isModifiedThisMonth = p.data_ultima_atualizacao.startsWith(prefix);
-        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') || (p.data_ultima_atualizacao !== p.data_cadastro);
+        const isSystemScope = !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01';
         return isExitStatus && isModifiedThisMonth && isSystemScope;
       }).length;
 
-  // Clientes Cadastrados no Mês / Ano (sistema, não planilha)
-  const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-  const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(selectedYear) && !p.usuario_cadastro?.includes('Planilha')).length;
+  // Clientes Cadastrados no Mês / Ano (sistema, não planilha, a partir de julho de 2026)
+  const cadastradosMes = patients.filter(p => p.data_cadastro.startsWith(prefix) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
+  const cadastradosAno = patients.filter(p => p.data_cadastro.startsWith(selectedYear) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
 
   // Math calculation for Growth (Proportion of active patients in the selected month)
   const lastDayOfMonthStr = `${selectedYear}-${selectedMonth}-31`; // generic cutoff
@@ -227,10 +224,9 @@ export const Dashboard: React.FC<{
 
   const diffFromPrevMonth = growthRate - growthRatePrev;
 
-  // Taxa de Retenção: Proporção baseada nos pacientes ativos, novos, desistentes e inativos do sistema
+  // Taxa de Retenção: Proporção baseada nos pacientes do sistema a partir de julho de 2026
   const retentionPatients = patients.filter(p => 
-    (!p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-06-01') ||
-    (p.data_ultima_atualizacao >= '2026-06-01' && p.data_ultima_atualizacao !== p.data_cadastro)
+    !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01'
   );
   const totalPatientsRet = retentionPatients.length;
   const activePatientsRet = retentionPatients.filter(p => p.status === 'Ativo').length;
@@ -268,17 +264,13 @@ export const Dashboard: React.FC<{
     let exits = 0;
 
     if (selectedYear === '2026') {
-      if (monthNum === '06') {
-        entries = 24;
-        exits = 3;
-      } else if (monthNum > '06') {
-        entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-        exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix)).length;
+      if (monthNum >= '07') {
+        entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
+        exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
       }
-      // Se for anterior a Junho de 2026, permanece 0
     } else if (Number(selectedYear) > 2026) {
-      entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha')).length;
-      exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix)).length;
+      entries = patients.filter(p => p.data_cadastro.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
+      exits = patients.filter(p => p.status === 'Desistiu' && p.data_ultima_atualizacao.startsWith(monthPrefix) && !p.usuario_cadastro?.includes('Planilha') && p.data_cadastro >= '2026-07-01').length;
     }
 
     return {
